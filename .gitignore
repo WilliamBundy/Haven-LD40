@@ -1,0 +1,8 @@
+bin/*
+usr/*
+usr/lib/*
+usr/include/*
+usr/bin/*
+Debug/*
+.vs/*
+
