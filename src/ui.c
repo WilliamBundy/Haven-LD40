@@ -8,7 +8,7 @@ void fontDrawText(Spritefont* font, wplRenderGroup* group, f32 x, f32 y, string 
 		char c = txt[i];
 		if(c == '\n') {
 			pos.x = 0;
-			pos.y += font->glyphs[1].h + 2;
+			pos.y += (font->glyphs[1].h + 2) * scale;
 		}
 
 		if(c < 32 || c > 128) continue;
@@ -22,6 +22,22 @@ void fontDrawText(Spritefont* font, wplRenderGroup* group, f32 x, f32 y, string 
 	}
 }
 
+int stringContains(string s, char c)
+{
+	int h = 0;
+	isize i = 0;
+	while(s[i] != '\0') {
+		if(s[i] == c) {
+			h = 1; 
+			break;
+		}
+		i++;
+	}
+
+	return h;
+}
+
+
 f32 fontDrawTextWrapped(Spritefont* font, wplRenderGroup* group, f32 x, f32 y, string txt, isize len, f32 scale, u32 color, f32 width)
 {
 	if(len == -1) len = strlen(txt);
@@ -31,12 +47,13 @@ f32 fontDrawTextWrapped(Spritefont* font, wplRenderGroup* group, f32 x, f32 y, s
 		char c = txt[i];
 		if(c == '\n') {
 			pos.x = 0;
-			pos.y += font->glyphs[1].h + 2;
+			pos.y += (font->glyphs[1].h + 2) * scale;
 		}
 
 		if((c == ' ' || c == '-') && pos.x > width) {
 			pos.x = 0;
-			pos.y += font->glyphs[1].h + 2;
+			pos.y += (font->glyphs[1].h + 2) * scale;
+			continue;
 		}
 
 		if(c < 32 || c > 128) continue;

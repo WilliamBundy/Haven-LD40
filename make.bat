@@ -1,6 +1,6 @@
 @echo off
 
-set baseName=ProjectTemplate
+set baseName=Haven
 set filePrefix=ld40
 
 set compiler=cl

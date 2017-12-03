@@ -1,52 +1,41 @@
-#define GenEventKini \
-	M_event(WantToJoin, \
-			"Some travelers want to join your haven.", "Will you let them?")\
-	M_event(Hungry, \
-			"Someone is extra hungry.", "Will you feed them?")\
-	M_event(Argument, \
-			"Some people are having an argument.", "Will you take sides?", \
-			"Help %s", "Help %s", "Break them up")\
-	M_event(Theft, \
-			"Someone stole something", "Will you punish them?")\
-	M_event(Rotting,\
-			"Some food rotted!", "Will you move it somewhere?")
 #define GenEventKinds \
-	M_event(WantToJoin, \
-			"Some travelers want to join your haven.", "Will you let them?")\
-	M_event(Hungry, \
-			"Someone is extra hungry.", "Will you feed them?")\
-	M_event(Argument, \
-			"Some people are having an argument.", "Will you take sides?", \
-			"Help %s", "Help %s", "Break them up")\
-	M_event(Theft, \
-			"Someone stole something", "Will you punish them?")\
-	M_event(Rotting,\
-			"Some food rotted!", "Will you move it somewhere?")
-
+	M_event(Gift, 0x228800AA) \
+	M_event(Solo, 0x333333AA) \
+	M_event(Group, 0x222222AA) \
+	M_event(Accident, 0x994400AA) \
+	M_event(Conflict, 0x990000AA) \
+	M_event(Outsider, 0x000088AA) \
+	M_event(Special, 0x550088AA) \
+	M_event(Tutorial, 0xFFCC00AA)
+			
 #define M_event(name, ...) Event_##name,
 enum EventKinds
 {
 	GenEventKinds
-
 	EventKindCount
 };
 
 #undef M_event
-#define M_event(name, text1, text2, ...) #name, text1, text2,
-string eventStrings[] = {
+#define M_event(name, ...) #name,
+string eventKindStrings[] = {
+	GenEventKinds
+};
+#undef M_event
+#define M_event(name, color, ...) color,
+u32 eventKindColors[] = {
 	GenEventKinds
 };
 
 #define GenTraits \
-	M_trait(Dextrous, Clumsy, 1, 1) \
-	M_trait(Fast, Slow, 1, 1) \
-	M_trait(Strong, Weak, 1, 1) \
-	M_trait(Clever, Dull, 0.5, 1) \
-	M_trait(Calm, Anxious, 0.5, 2) \
-	M_trait(Serious, Lazy, 0.5, 1) \
-	M_trait(Tough, Fragile, 1, 1) \
-	M_trait(Kind, Mean, 0.5, 2) \
-	M_trait(Brave, Cowardly, 1, 2)
+	M_trait(Dextrous, Clumsy, 1, 1, 1.5, 0.9, 1.5, 0.75) \
+	M_trait(Fast, Slow, 1, 1, 1.1, 1, 1.1, 0.9) \
+	M_trait(Strong, Weak, 1, 1, 1.1, 1, 2, 0.6) \
+	M_trait(Clever, Dull, 0.5, 1, 1, 1, 1.1, 1) \
+	M_trait(Calm, Anxious, 0.5, 2, 1, 1, 1.1, 0.95) \
+	M_trait(Serious, Lazy, 0.5, 1, 1.5, 0.75, 1, 1) \
+	M_trait(Tough, Fragile, 1, 1, 1, 1, 1, 1) \
+	M_trait(Kind, Mean, 0.5, 2, 1, 1, 0.75, 1.5) \
+	M_trait(Brave, Cowardly, 1, 2, 1, 1, 1.5, 0.9)
 
 #define M_trait(name1, name2, ...) Trait_##name1,
 enum PositiveTraits
@@ -81,7 +70,7 @@ string negTraitNames[] = {
 };
 #undef M_trait
 
-#define M_trait(name1, name2, pm, nm) pm,
+#define M_trait(name1, name2, pm, nm, ...) pm,
 float posTraitAggroModifier[] = {
 	1,
 	GenTraits
@@ -90,8 +79,39 @@ float posTraitAggroModifier[] = {
 #undef M_trait
 
 
-#define M_trait(name1, name2, pm, nm) nm,
+#define M_trait(name1, name2, pm, nm, ...) nm,
 float negTraitAggroModifier[] = {
+	1,
+	GenTraits
+
+};
+#undef M_trait
+#define M_trait(name1, name2, pm, nm, ppm, nnm, ...) ppm,
+float posTraitWorkMod[] = {
+	1,
+	GenTraits
+
+};
+#undef M_trait
+
+#define M_trait(name1, name2, pm, nm, ppm, nnm, ...) nnm,
+float negTraitWorkMod[] = {
+	1,
+	GenTraits
+
+};
+#undef M_trait
+
+#define M_trait(name1, name2, pm, nm, ppm, nnm, pppm, nnnm,...) pppm,
+float posTraitDmgMod[] = {
+	1,
+	GenTraits
+
+};
+#undef M_trait
+
+#define M_trait(name1, name2, pm, nm, ppm, nnm, pppm, nnnm, ...) nnnm,
+float negTraitDmgMod[] = {
 	1,
 	GenTraits
 
@@ -102,7 +122,7 @@ float negTraitAggroModifier[] = {
 	M_job(None, "idle", "nothing") \
 	M_job(FoodGather, "gathering food", "food") \
 	M_job(WoodGather, "wood cutting", "wood") \
-	M_job(Crafting, "crafting", "craftwork") \
+	M_job(Crafting, "crafting", "craft work") \
 	M_job(Building, "building", "build work") 
 
 #define M_job(name, ...) ActorJob_##name,
@@ -145,4 +165,15 @@ string astateDescs[] = {
 };
 #undef M_astate
 	
+string craftTargets[] = {
+	"none", 
+	"tool",
+	"weapon"
+};
 
+string buildTargets[] = {
+	"none", 
+	"hut", 
+	"farm",
+	"smith"
+};
