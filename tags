@@ -1,7 +1,7 @@
 Actor	src/gamestate.c	/^struct Actor$/;"	s	file:
 Actor	src/gamestate.c	/^typedef struct Actor Actor;$/;"	t	typeref:struct:Actor	file:
-ActorCardHeight	src/gamestate.c	392;"	d	file:
-ActorCardWidth	src/gamestate.c	391;"	d	file:
+ActorCardHeight	src/gamestate.c	233;"	d	file:
+ActorCardWidth	src/gamestate.c	232;"	d	file:
 ActorJobCount	src/gamedata.c	/^	ActorJobCount$/;"	e	enum:ActorStates	file:
 ActorJobs	src/gamedata.c	/^enum ActorJobs {$/;"	g	file:
 ActorStateCount	src/gamedata.c	/^	ActorStateCount$/;"	e	enum:ActorJobs	file:
@@ -22,97 +22,107 @@ Button_JustUp	src/wpl/wplInternal.h	/^	Button_JustUp = -1,$/;"	e	enum:ButtonStat
 Button_Up	src/wpl/wplInternal.h	/^	Button_Up = 0,$/;"	e	enum:ButtonState
 CreateEventAction	src/eventProcs.c	/^CreateEventAction(eventArgumentDefault)$/;"	f
 CreateEventAction	src/eventProcs.c	/^CreateEventAction(eventBreakUpFight)$/;"	f
+CreateEventAction	src/eventProcs.c	/^CreateEventAction(eventBuyArtifact)$/;"	f
 CreateEventAction	src/eventProcs.c	/^CreateEventAction(eventDoNothing)$/;"	f
 CreateEventAction	src/eventProcs.c	/^CreateEventAction(eventExtraHungryEat)$/;"	f
 CreateEventAction	src/eventProcs.c	/^CreateEventAction(eventExtraHungryNoEat)$/;"	f
+CreateEventAction	src/eventProcs.c	/^CreateEventAction(eventFightMachine)$/;"	f
 CreateEventAction	src/eventProcs.c	/^CreateEventAction(eventFreeFood)$/;"	f
 CreateEventAction	src/eventProcs.c	/^CreateEventAction(eventFreeWood)$/;"	f
 CreateEventAction	src/eventProcs.c	/^CreateEventAction(eventIgnoreHurtGatherers)$/;"	f
-CreateEventAction	src/eventProcs.c	/^CreateEventAction(eventIgnoreStranger)$/;"	f
-CreateEventAction	src/eventProcs.c	/^CreateEventAction(eventIgnoreStrangerGatherer)$/;"	f
-CreateEventAction	src/eventProcs.c	/^CreateEventAction(eventIgnoreStrangerWoodcutter)$/;"	f
 CreateEventAction	src/eventProcs.c	/^CreateEventAction(eventInsulted)$/;"	f
+CreateEventAction	src/eventProcs.c	/^CreateEventAction(eventInvestigateCave)$/;"	f
 CreateEventAction	src/eventProcs.c	/^CreateEventAction(eventLetFightFinish)$/;"	f
 CreateEventAction	src/eventProcs.c	/^CreateEventAction(eventLetThemSleep)$/;"	f
+CreateEventAction	src/eventProcs.c	/^CreateEventAction(eventSellFoodForTools)$/;"	f
+CreateEventAction	src/eventProcs.c	/^CreateEventAction(eventSellFoodForWeapons)$/;"	f
+CreateEventAction	src/eventProcs.c	/^CreateEventAction(eventSellFoodForWood)$/;"	f
+CreateEventAction	src/eventProcs.c	/^CreateEventAction(eventSellToolsForStuff)$/;"	f
+CreateEventAction	src/eventProcs.c	/^CreateEventAction(eventSellWeaponsForStuff)$/;"	f
+CreateEventAction	src/eventProcs.c	/^CreateEventAction(eventSellWoodForFood)$/;"	f
+CreateEventAction	src/eventProcs.c	/^CreateEventAction(eventSellWoodForTools)$/;"	f
+CreateEventAction	src/eventProcs.c	/^CreateEventAction(eventSellWoodForWeapons)$/;"	f
 CreateEventAction	src/eventProcs.c	/^CreateEventAction(eventSendSomeoneToHelpGatherers)$/;"	f
-CreateEventAction	src/eventProcs.c	/^CreateEventAction(eventSendToDefuse)$/;"	f
-CreateEventAction	src/eventProcs.c	/^CreateEventAction(eventSendToDefuseGatherer)$/;"	f
-CreateEventAction	src/eventProcs.c	/^CreateEventAction(eventSendToDefuseWoodcutter)$/;"	f
-CreateEventAction	src/eventProcs.c	/^CreateEventAction(eventSeparateTheTwo)$/;"	f
+CreateEventAction	src/eventProcs.c	/^CreateEventAction(eventSeparateArgument)$/;"	f
 CreateEventAction	src/eventProcs.c	/^CreateEventAction(eventSideWithA)$/;"	f
 CreateEventAction	src/eventProcs.c	/^CreateEventAction(eventSideWithB)$/;"	f
 CreateEventAction	src/eventProcs.c	/^CreateEventAction(eventWakeUpNapper)$/;"	f
 CreateEventAction	src/eventProcs.c	/^CreateEventAction(eventWelcomeTravellers)$/;"	f
 CreateEventAction	src/eventProcs.c	2;"	d	file:
-DayTimeInFrames	src/gamestate.c	108;"	d	file:
+DayTimeInFrames	src/gamestate.c	116;"	d	file:
 EventAction	src/gamestate.c	/^typedef int (*EventAction)(World* world, WorldEvent* event, int something, void* ud);$/;"	t	file:
 EventDefaultOption	eventGen.py	/^def EventDefaultOption(a):$/;"	f
-EventDefaultOption	src/eventProcs.c	232;"	d	file:
-EventEnd	src/eventProcs.c	233;"	d	file:
-EventKind	src/eventProcs.c	226;"	d	file:
+EventDefaultOption	src/eventProcs.c	390;"	d	file:
+EventEnd	src/eventProcs.c	393;"	d	file:
+EventJobSpecific	src/eventProcs.c	392;"	d	file:
+EventKind	eventGen.py	/^def EventKind(a): pass$/;"	f
+EventKind	src/eventProcs.c	379;"	d	file:
 EventKindCount	src/gamedata.c	/^	EventKindCount$/;"	e	enum:EventKinds	file:
 EventKinds	src/gamedata.c	/^enum EventKinds$/;"	g	file:
+EventNegResult	src/eventProcs.c	391;"	d	file:
 EventOption	eventGen.py	/^def EventOption(a, b):$/;"	f
-EventOption	src/eventProcs.c	230;"	d	file:
-EventOptionReqSelected	src/eventProcs.c	231;"	d	file:
-EventPanelHeight	src/gamestate.c	506;"	d	file:
-EventPanelWidth	src/gamestate.c	505;"	d	file:
+EventOption	src/eventProcs.c	383;"	d	file:
+EventOptionReq	eventGen.py	/^def EventOptionReq(a, b, c): pass$/;"	f
+EventOptionReq	src/eventProcs.c	385;"	d	file:
+EventOptionReqSelected	src/eventProcs.c	384;"	d	file:
+EventPanelHeight	src/gamestate.c	395;"	d	file:
+EventPanelWidth	src/gamestate.c	394;"	d	file:
 EventSelectCount	eventGen.py	/^def EventSelectCount(a, b): pass$/;"	f
-EventSelectCount	src/eventProcs.c	228;"	d	file:
+EventSelectCount	src/eventProcs.c	381;"	d	file:
 EventSetTimeout	eventGen.py	/^def EventSetTimeout(a, b): pass$/;"	f
-EventSetTimeout	src/eventProcs.c	227;"	d	file:
+EventSetTimeout	src/eventProcs.c	380;"	d	file:
 EventStart	eventGen.py	/^def EventStart(a, b, c): pass$/;"	f
-EventStart	src/eventProcs.c	219;"	d	file:
+EventStart	src/eventProcs.c	371;"	d	file:
 EventString	eventGen.py	/^def EventString(a): pass$/;"	f
-EventString	src/eventProcs.c	229;"	d	file:
-Face1	src/gamestate.c	379;"	d	file:
-Face2	src/gamestate.c	380;"	d	file:
+EventString	src/eventProcs.c	382;"	d	file:
+Face1	src/gamestate.c	219;"	d	file:
+Face2	src/gamestate.c	220;"	d	file:
 GLattr	src/wpl/wpl.c	62;"	d	file:
 GenActorJobs	src/gamedata.c	/^	GenActorJobs$/;"	e	enum:ActorStates	file:
-GenActorJobs	src/gamedata.c	121;"	d	file:
+GenActorJobs	src/gamedata.c	136;"	d	file:
 GenActorStates	src/gamedata.c	/^	GenActorStates$/;"	e	enum:ActorJobs	file:
-GenActorStates	src/gamedata.c	146;"	d	file:
+GenActorStates	src/gamedata.c	161;"	d	file:
 GenEventKinds	src/gamedata.c	/^	GenEventKinds$/;"	e	enum:EventKinds	file:
-GenEventKinds	src/gamedata.c	1;"	d	file:
+GenEventKinds	src/gamedata.c	16;"	d	file:
 GenTraits	src/gamedata.c	/^	GenTraits$/;"	e	enum:NegativeTraits	file:
 GenTraits	src/gamedata.c	/^	GenTraits$/;"	e	enum:PositiveTraits	file:
-GenTraits	src/gamedata.c	29;"	d	file:
+GenTraits	src/gamedata.c	44;"	d	file:
 Hut	src/gamestate.c	/^struct Hut$/;"	s	file:
 Hut	src/gamestate.c	/^typedef struct Hut Hut;$/;"	t	typeref:struct:Hut	file:
-M_astate	src/gamedata.c	156;"	d	file:
-M_astate	src/gamedata.c	161;"	d	file:
-M_astate	src/gamedata.c	162;"	d	file:
-M_astate	src/gamedata.c	166;"	d	file:
-M_event	src/gamedata.c	11;"	d	file:
-M_event	src/gamedata.c	18;"	d	file:
-M_event	src/gamedata.c	19;"	d	file:
-M_event	src/gamedata.c	23;"	d	file:
-M_event	src/gamedata.c	24;"	d	file:
-M_job	src/gamedata.c	128;"	d	file:
-M_job	src/gamedata.c	134;"	d	file:
-M_job	src/gamedata.c	135;"	d	file:
-M_job	src/gamedata.c	139;"	d	file:
-M_job	src/gamedata.c	140;"	d	file:
-M_job	src/gamedata.c	144;"	d	file:
+M_astate	src/gamedata.c	171;"	d	file:
+M_astate	src/gamedata.c	176;"	d	file:
+M_astate	src/gamedata.c	177;"	d	file:
+M_astate	src/gamedata.c	181;"	d	file:
+M_event	src/gamedata.c	26;"	d	file:
+M_event	src/gamedata.c	33;"	d	file:
+M_event	src/gamedata.c	34;"	d	file:
+M_event	src/gamedata.c	38;"	d	file:
+M_event	src/gamedata.c	39;"	d	file:
+M_job	src/gamedata.c	143;"	d	file:
+M_job	src/gamedata.c	149;"	d	file:
+M_job	src/gamedata.c	150;"	d	file:
+M_job	src/gamedata.c	154;"	d	file:
+M_job	src/gamedata.c	155;"	d	file:
+M_job	src/gamedata.c	159;"	d	file:
 M_trait	src/gamedata.c	103;"	d	file:
-M_trait	src/gamedata.c	105;"	d	file:
-M_trait	src/gamedata.c	111;"	d	file:
-M_trait	src/gamedata.c	113;"	d	file:
-M_trait	src/gamedata.c	119;"	d	file:
-M_trait	src/gamedata.c	40;"	d	file:
-M_trait	src/gamedata.c	47;"	d	file:
-M_trait	src/gamedata.c	49;"	d	file:
-M_trait	src/gamedata.c	56;"	d	file:
-M_trait	src/gamedata.c	58;"	d	file:
-M_trait	src/gamedata.c	63;"	d	file:
-M_trait	src/gamedata.c	65;"	d	file:
+M_trait	src/gamedata.c	104;"	d	file:
+M_trait	src/gamedata.c	110;"	d	file:
+M_trait	src/gamedata.c	112;"	d	file:
+M_trait	src/gamedata.c	118;"	d	file:
+M_trait	src/gamedata.c	120;"	d	file:
+M_trait	src/gamedata.c	126;"	d	file:
+M_trait	src/gamedata.c	128;"	d	file:
+M_trait	src/gamedata.c	134;"	d	file:
+M_trait	src/gamedata.c	55;"	d	file:
+M_trait	src/gamedata.c	62;"	d	file:
+M_trait	src/gamedata.c	64;"	d	file:
 M_trait	src/gamedata.c	71;"	d	file:
 M_trait	src/gamedata.c	73;"	d	file:
-M_trait	src/gamedata.c	79;"	d	file:
-M_trait	src/gamedata.c	82;"	d	file:
+M_trait	src/gamedata.c	78;"	d	file:
+M_trait	src/gamedata.c	80;"	d	file:
+M_trait	src/gamedata.c	86;"	d	file:
 M_trait	src/gamedata.c	88;"	d	file:
-M_trait	src/gamedata.c	89;"	d	file:
-M_trait	src/gamedata.c	95;"	d	file:
+M_trait	src/gamedata.c	94;"	d	file:
 M_trait	src/gamedata.c	97;"	d	file:
 Mode_DayEvents	src/gamestate.c	/^	Mode_DayEvents,$/;"	e	enum:PlayModes	file:
 Mode_EveningReview	src/gamestate.c	/^	Mode_EveningReview,$/;"	e	enum:PlayModes	file:
@@ -128,6 +138,11 @@ RandomState	src/random.c	/^struct RandomState$/;"	s	file:
 RandomState	src/random.c	/^typedef struct RandomState RandomState;$/;"	t	typeref:struct:RandomState	file:
 Rect2i	src/vmath.c	/^struct Rect2i$/;"	s	file:
 Rect2i	src/vmath.c	/^typedef struct Rect2i Rect2i;$/;"	t	typeref:struct:Rect2i	file:
+Resource_Artifacts	src/gamedata.c	/^	Resource_Artifacts,$/;"	e	enum:__anon1	file:
+Resource_Food	src/gamedata.c	/^	Resource_Food,$/;"	e	enum:__anon1	file:
+Resource_Tools	src/gamedata.c	/^	Resource_Tools,$/;"	e	enum:__anon1	file:
+Resource_Weapons	src/gamedata.c	/^	Resource_Weapons,$/;"	e	enum:__anon1	file:
+Resource_Wood	src/gamedata.c	/^	Resource_Wood,$/;"	e	enum:__anon1	file:
 SDL_MAIN_HANDLED	src/wpl/wpl.c	7;"	d	file:
 STBI_ONLY_PNG	src/wpl/wpl.c	16;"	d	file:
 STBRP_DEF	src/wpl/wpl.c	19;"	d	file:
@@ -167,8 +182,8 @@ World	src/gamestate.c	/^struct World $/;"	s	file:
 World	src/gamestate.c	/^typedef struct World World;$/;"	t	typeref:struct:World	file:
 WorldEvent	src/gamestate.c	/^struct WorldEvent$/;"	s	file:
 WorldEvent	src/gamestate.c	/^typedef struct WorldEvent WorldEvent;$/;"	t	typeref:struct:WorldEvent	file:
-_glyph_offset_x	src/ld40Main.c	20;"	d	file:
-_glyph_offset_y	src/ld40Main.c	21;"	d	file:
+_glyph_offset_x	src/ld40Main.c	21;"	d	file:
+_glyph_offset_y	src/ld40Main.c	22;"	d	file:
 actions	src/gamestate.c	/^	EventAction actions[16];$/;"	m	struct:WorldEvent	file:
 activeEvent	src/gamestate.c	/^	int eventCount, activeEvent;$/;"	m	struct:PlayState	file:
 actorCount	src/gamestate.c	/^	int actorCount;$/;"	m	struct:World	file:
@@ -176,16 +191,19 @@ actorScroll	src/gamestate.c	/^	f32 actorScroll;$/;"	m	struct:PlayState	file:
 actors	src/gamestate.c	/^	Actor actors[256];$/;"	m	struct:World	file:
 actors	src/gamestate.c	/^	Actor* actors[4];$/;"	m	struct:Hut	file:
 addActor	src/gamestate.c	/^Actor* addActor(Actor* actor)$/;"	f
-addDebugEvent	src/gamestate.c	/^void addDebugEvent()$/;"	f
+addDebugEvent	src/eventGen.c	/^void addDebugEvent()$/;"	f
 addSprite	src/gamestate.c	/^void addSprite(f32 x, f32 y, f32 w, f32 h, f32 tx, f32 ty)$/;"	f
 addSpriteS	src/gamestate.c	/^void addSpriteS(f32 x, f32 y, f32 w, f32 h, f32 tx, f32 ty, f32 s)$/;"	f
 advanceWidth	src/wpl/wplInternal.h	/^	int advanceWidth, leftSideBearing;$/;"	m	struct:wplGlyph
 aggroChance	src/gamestate.c	/^	f32 aggroChance;$/;"	m	struct:Actor	file:
+amt	src/gamestate.c	/^		int amtMin, amtMax, amt;$/;"	m	struct:WorldEvent::__anon1	file:
+amtMax	src/gamestate.c	/^		int amtMin, amtMax, amt;$/;"	m	struct:WorldEvent::__anon1	file:
+amtMin	src/gamestate.c	/^		int amtMin, amtMax, amt;$/;"	m	struct:WorldEvent::__anon1	file:
 angle	src/wpl/wplInternal.h	/^	f32 angle;$/;"	m	struct:wplSprite
 appliesToJobs	src/gamestate.c	/^	int appliesToJobs[ActorJobCount];$/;"	m	struct:WorldEvent	file:
 arena	src/gamestate.c	/^	MemoryArena* arena;$/;"	m	struct:PlayState	file:
 arena	src/ld40Main.c	/^MemoryArena* arena;$/;"	v
-artifacts	src/gamestate.c	/^		int tools, weapons, artifacts;$/;"	m	struct:World::__anon1	file:
+artifacts	src/gamestate.c	/^		int tools, weapons, artifacts;$/;"	m	struct:World::__anon2	file:
 astateDescs	src/gamedata.c	/^string astateDescs[] = {$/;"	v
 basePath	src/wpl/wplInternal.h	/^	u8* basePath;$/;"	m	struct:wplWindow
 basicTex	src/ld40Main.c	/^	wplTexture* basicTex;$/;"	m	struct:__anon1	file:
@@ -196,7 +214,7 @@ borderless	src/wpl/wplInternal.h	/^	i64 borderless;$/;"	m	struct:wplWindowDef
 buildTarget	src/gamestate.c	/^	int buildTarget;$/;"	m	struct:World	file:
 buildTargets	src/gamedata.c	/^string buildTargets[] = {$/;"	v
 buildWorkNeeded	src/gamestate.c	/^	int buildWorkNeeded;$/;"	m	struct:World	file:
-buildings	src/gamestate.c	/^	} buildings;$/;"	m	struct:World	typeref:struct:World::__anon2	file:
+buildings	src/gamestate.c	/^	} buildings;$/;"	m	struct:World	typeref:struct:World::__anon3	file:
 capacity	src/wpl/wplInternal.h	/^	i64 count, capacity, lastFilled;$/;"	m	struct:wplRenderGroup
 clearOnDraw	src/wpl/wplInternal.h	/^	i32 clearOnDraw;$/;"	m	struct:wplRenderGroup
 color	src/wpl/wplInternal.h	/^	u32 color;$/;"	m	struct:wplSprite
@@ -225,37 +243,38 @@ drawTextR	src/ui.c	/^void drawTextR(f32 x, f32 y, string s)$/;"	f
 drawTextS	src/ui.c	/^void drawTextS(f32 x, f32 y, string s, f32 scale)$/;"	f
 drawTextSW	src/ui.c	/^f32 drawTextSW(f32 x, f32 y, string s, f32 scale, f32 w)$/;"	f
 elapsedTicks	src/wpl/wplInternal.h	/^	i64 elapsedTicks;$/;"	m	struct:wplWindow
+eventAddPeople	src/eventGen.c	/^int eventAddPeople(WorldEvent* e)$/;"	f
 eventCount	src/gamestate.c	/^	int eventCount, activeEvent;$/;"	m	struct:PlayState	file:
 eventKindColors	src/gamedata.c	/^u32 eventKindColors[] = {$/;"	v
 eventKindStrings	src/gamedata.c	/^string eventKindStrings[] = {$/;"	v
-eventResolved	src/gamestate.c	/^	int resultCount, eventResolved;$/;"	m	struct:WorldEvent	file:
+eventResult	src/eventProcs.c	/^void eventResult(WorldEvent* e, string res)$/;"	f
 eventSpan	src/gamestate.c	/^	int eventSpan, nextEventTime;$/;"	m	struct:PlayState	file:
 eventTemplateCount	src/eventProcs.c	/^isize eventTemplateCount = 0;$/;"	v
 eventTemplates	src/eventProcs.c	/^WorldEvent eventTemplates[256];$/;"	v
 events	src/gamestate.c	/^	WorldEvent events[256];$/;"	m	struct:PlayState	file:
 exitEvent	src/wpl/wplInternal.h	/^	i64 exitEvent;$/;"	m	struct:wplState
-farms	src/gamestate.c	/^		int farms;$/;"	m	struct:World::__anon2	file:
+farms	src/gamestate.c	/^		int farms;$/;"	m	struct:World::__anon3	file:
 femaleNames	src/names.h	/^string femaleNames[] = {$/;"	v
 flags	src/wpl/wplInternal.h	/^	f32 flags;$/;"	m	struct:wplVertex
 flags	src/wpl/wplInternal.h	/^	i32 flags;$/;"	m	struct:wplSprite
 font	src/ld40Main.c	/^	Spritefont font;$/;"	m	struct:__anon1	file:
 fontDrawText	src/ui.c	/^void fontDrawText(Spritefont* font, wplRenderGroup* group, f32 x, f32 y, string txt, isize len, f32 scale, u32 color)$/;"	f
 fontDrawTextWrapped	src/ui.c	/^f32 fontDrawTextWrapped(Spritefont* font, wplRenderGroup* group, f32 x, f32 y, string txt, isize len, f32 scale, u32 color, f32 width)$/;"	f
-food	src/gamestate.c	/^		int wood, food;$/;"	m	struct:World::__anon1	file:
+food	src/gamestate.c	/^		int wood, food;$/;"	m	struct:World::__anon2	file:
 food	src/gamestate.c	/^	int health, food;$/;"	m	struct:Actor	file:
 frag	src/wpl/wplInternal.h	/^	u32 vert, frag, program;$/;"	m	struct:wplShader
 fragShader	src/wpl/wplInternal.h	/^	const u8 *vertShader, *fragShader;$/;"	m	struct:wplWindow
 gMemInfo	src/ld40Main.c	/^MemoryInfo gMemInfo;$/;"	v
 gameData	src/ld40Main.c	/^} gameData;$/;"	v	typeref:struct:__anon1
-generateAccidentEvent	src/gamestate.c	/^void generateAccidentEvent()$/;"	f
+generateAccidentEvent	src/eventGen.c	/^void generateAccidentEvent()$/;"	f
 generateActor	src/gamestate.c	/^Actor* generateActor()$/;"	f
-generateConflictEvent	src/gamestate.c	/^void generateConflictEvent()$/;"	f
-generateGiftEvent	src/gamestate.c	/^void generateGiftEvent()$/;"	f
-generateGroupEvent	src/gamestate.c	/^void generateGroupEvent()$/;"	f
-generateOutsiderEvent	src/gamestate.c	/^void generateOutsiderEvent()$/;"	f
-generateSoloEvent	src/gamestate.c	/^void generateSoloEvent()$/;"	f
-generateSpecialEvent	src/gamestate.c	/^void generateSpecialEvent()$/;"	f
-getEvent	src/gamestate.c	/^WorldEvent* getEvent(int kind)$/;"	f
+generateConflictEvent	src/eventGen.c	/^void generateConflictEvent()$/;"	f
+generateGiftEvent	src/eventGen.c	/^void generateGiftEvent()$/;"	f
+generateGroupEvent	src/eventGen.c	/^void generateGroupEvent()$/;"	f
+generateOutsiderEvent	src/eventGen.c	/^void generateOutsiderEvent()$/;"	f
+generateSoloEvent	src/eventGen.c	/^void generateSoloEvent()$/;"	f
+generateSpecialEvent	src/eventGen.c	/^void generateSpecialEvent()$/;"	f
+getEvent	src/eventGen.c	/^WorldEvent* getEvent(int kind)$/;"	f
 getMouse	src/ui.c	/^void getMouse(wplRenderGroup* group, f32* mx, f32* my)$/;"	f
 getNextEvent	src/eventProcs.c	/^WorldEvent* getNextEvent(WorldEvent* events, isize* eventCount)$/;"	f
 getRandRangeF64	src/random.c	/^f64 getRandRangeF64(RandomState* r, f64 mn, f64 mx)$/;"	f
@@ -263,6 +282,7 @@ getRandom	src/random.c	/^f32 getRandom(RandomState* r)$/;"	f
 getRandomF64	src/random.c	/^f64 getRandomF64(RandomState* r)$/;"	f
 getRandomRange	src/random.c	/^isize getRandomRange(RandomState* r, isize mn, isize mx)$/;"	f
 getRandomU64	src/random.c	/^u64 getRandomU64(RandomState* r)$/;"	f
+getSpecificEvent	src/eventGen.c	/^WorldEvent* getSpecificEvent(int index)$/;"	f
 gl21Frag	src/wpl/wplShaders.h	/^const char* gl21Frag = "" "#version 120\\n"$/;"	v
 gl21Vert	src/wpl/wplShaders.h	/^const char* gl21Vert = "" "#version 120\\n"$/;"	v
 gl31Frag	src/wpl/wplShaders.h	/^const char* gl31Frag = "" "#version 140\\n"$/;"	v
@@ -281,11 +301,12 @@ h	src/wpl/wplInternal.h	/^	f32 x, y, w, h, cx, cy;$/;"	m	struct:wplSprite
 h	src/wpl/wplInternal.h	/^	i64 w, h;$/;"	m	struct:wplTexture
 h	src/wpl/wplInternal.h	/^	int x1, y1, x2, y2, w, h;$/;"	m	struct:wplGlyph
 hasFocus	src/wpl/wplInternal.h	/^	i64 hasFocus;$/;"	m	struct:wplState
+hasReq	src/gamestate.c	/^		int hasReq;$/;"	m	struct:WorldEvent::__anon1	file:
 health	src/gamestate.c	/^	int health, food;$/;"	m	struct:Actor	file:
 height	src/wpl/wplInternal.h	/^	i64 width, height;$/;"	m	struct:wplState
 height	src/wpl/wplInternal.h	/^	i64 width, height;$/;"	m	struct:wplWindowDef
 hidden	src/wpl/wplInternal.h	/^	i64 hidden;$/;"	m	struct:wplWindowDef
-huts	src/gamestate.c	/^		int huts;$/;"	m	struct:World::__anon2	file:
+huts	src/gamestate.c	/^		int huts;$/;"	m	struct:World::__anon3	file:
 index	src/wpl/wplInternal.h	/^	int index;$/;"	m	struct:wplGlyph
 indices	src/wpl/wplInternal.h	/^	i32 *indices, *vertCounts;$/;"	m	struct:wplRenderGroup
 init	src/ld40Main.c	/^void init(wplWindow* window)$/;"	f
@@ -300,6 +321,7 @@ job	src/gamestate.c	/^	int state, job, mood;$/;"	m	struct:Actor	file:
 jobContribType	src/gamedata.c	/^string jobContribType[] = {$/;"	v
 jobCount	src/gamestate.c	/^	int jobCount[ActorJobCount];$/;"	m	struct:World	file:
 jobDescs	src/gamedata.c	/^string jobDescs[] = {$/;"	v
+jobSpecific	src/gamestate.c	/^	int jobSpecific;$/;"	m	struct:WorldEvent	file:
 kern	src/wpl/wplInternal.h	/^	i32 kern[256][256];$/;"	m	struct:wplFont
 keyboard	src/wpl/wplInternal.h	/^	i8* keyboard;$/;"	m	struct:wplInputState
 keycodes	src/wpl/wplInternal.h	/^	i8 keycodes[1024];$/;"	m	struct:wplInputState
@@ -325,11 +347,13 @@ negTraitAggroModifier	src/gamedata.c	/^float negTraitAggroModifier[] = {$/;"	v
 negTraitDmgMod	src/gamedata.c	/^float negTraitDmgMod[] = {$/;"	v
 negTraitNames	src/gamedata.c	/^string negTraitNames[] = {$/;"	v
 negTraitWorkMod	src/gamedata.c	/^float negTraitWorkMod[] = {$/;"	v
+negativeResultText	src/gamestate.c	/^	string negativeResultText;$/;"	m	struct:WorldEvent	file:
 negativeTraits	src/gamestate.c	/^	int negativeTraits[4];$/;"	m	struct:Actor	file:
 nextEventTime	src/gamestate.c	/^	int eventSpan, nextEventTime;$/;"	m	struct:PlayState	file:
 offsetX	src/wpl/wplInternal.h	/^	f32 offsetX, offsetY;$/;"	m	struct:wplRenderGroup
 offsetY	src/wpl/wplInternal.h	/^	f32 offsetX, offsetY;$/;"	m	struct:wplRenderGroup
 optionCount	src/gamestate.c	/^	int textCount, optionCount, optionRequiresSelection;$/;"	m	struct:WorldEvent	file:
+optionReqs	src/gamestate.c	/^	} optionReqs[16];$/;"	m	struct:WorldEvent	typeref:struct:WorldEvent::__anon1	file:
 optionRequiresSelection	src/gamestate.c	/^	int textCount, optionCount, optionRequiresSelection;$/;"	m	struct:WorldEvent	file:
 options	src/gamestate.c	/^	string options[16];$/;"	m	struct:WorldEvent	file:
 peopleSelected	src/gamestate.c	/^	int peopleToSelectMin, peopleToSelectMax, peopleSelected;$/;"	m	struct:WorldEvent	file:
@@ -340,7 +364,7 @@ play	src/gamestate.c	/^} play;$/;"	v	typeref:struct:PlayState
 playInit	src/gamestate.c	/^void playInit(wplWindow* window)$/;"	f
 playUpdate	src/gamestate.c	/^void playUpdate(wplWindow* window, wplState* state)$/;"	f
 populateEventFromTemplate	src/eventProcs.c	/^void populateEventFromTemplate(World* world, WorldEvent* event, WorldEvent* template)$/;"	f
-population	src/gamestate.c	/^		int population;$/;"	m	struct:World::__anon1	file:
+population	src/gamestate.c	/^		int population;$/;"	m	struct:World::__anon2	file:
 posCentered	src/wpl/wplInternal.h	/^	i64 posCentered;$/;"	m	struct:wplWindowDef
 posTraitAggroModifier	src/gamedata.c	/^float posTraitAggroModifier[] = {$/;"	v
 posTraitDmgMod	src/gamedata.c	/^float posTraitDmgMod[] = {$/;"	v
@@ -356,10 +380,13 @@ refreshRate	src/wpl/wplInternal.h	/^	i64 refreshRate;$/;"	m	struct:wplWindow
 removed	src/gamestate.c	/^	Actor* removed[256];$/;"	m	struct:PlayState	file:
 removedCount	src/gamestate.c	/^	isize removedCount;$/;"	m	struct:PlayState	file:
 resizeable	src/wpl/wplInternal.h	/^	i64 resizeable;$/;"	m	struct:wplWindowDef
-resources	src/gamestate.c	/^	} resources;$/;"	m	struct:World	typeref:struct:World::__anon1	file:
-resultCount	src/gamestate.c	/^	int resultCount, eventResolved;$/;"	m	struct:WorldEvent	file:
+resolved	src/gamestate.c	/^	int resultCount, resolved;$/;"	m	struct:WorldEvent	file:
+resource	src/gamestate.c	/^		int resource;$/;"	m	struct:WorldEvent::__anon1	file:
+resourceNames	src/gamedata.c	/^string resourceNames[] = {$/;"	v
+resources	src/gamestate.c	/^	} resources;$/;"	m	struct:World	typeref:struct:World::__anon2	file:
+resultCount	src/gamestate.c	/^	int resultCount, resolved;$/;"	m	struct:WorldEvent	file:
 resultLines	src/gamestate.c	/^	string resultLines[16];$/;"	m	struct:WorldEvent	file:
-resultText	src/gamestate.c	/^	string resultText[16];$/;"	m	struct:WorldEvent	file:
+resultText	src/gamestate.c	/^	string resultText;$/;"	m	struct:WorldEvent	file:
 resultValues	src/gamestate.c	/^	int resultValues[16];$/;"	m	struct:WorldEvent	file:
 rotateLeft	src/random.c	/^u64 rotateLeft(const u64 t, i64 k)$/;"	f	file:
 scale	src/wpl/wplInternal.h	/^	f32 scale;$/;"	m	struct:wplFont
@@ -372,7 +399,7 @@ sh	src/wpl/wplInternal.h	/^	int sw, sh;$/;"	m	struct:wplGlyph
 shader	src/ld40Main.c	/^	wplShader* shader;$/;"	m	struct:__anon1	file:
 shader	src/wpl/wplInternal.h	/^	wplShader* shader;$/;"	m	struct:wplRenderGroup
 sizeText	src/ui.c	/^isize sizeText(string s)$/;"	f
-smiths	src/gamestate.c	/^		int smiths;$/;"	m	struct:World::__anon2	file:
+smiths	src/gamestate.c	/^		int smiths;$/;"	m	struct:World::__anon3	file:
 splitmix64	src/random.c	/^u64 splitmix64(u64* x)$/;"	f	file:
 spriteMember	src/wpl/wplRender.c	181;"	d	file:
 sprites	src/wpl/wplInternal.h	/^	wplSprite* sprites;$/;"	m	struct:wplRenderGroup
@@ -392,7 +419,7 @@ timeoutMin	src/gamestate.c	/^	f32 timeoutMin, timeoutMax, timeout;$/;"	m	struct:
 timer	src/gamestate.c	/^	int timer;$/;"	m	struct:Hut	file:
 tint	src/wpl/wplInternal.h	/^	u32 tint;$/;"	m	struct:wplRenderGroup
 title	src/wpl/wplInternal.h	/^	string title;$/;"	m	struct:wplWindowDef
-tools	src/gamestate.c	/^		int tools, weapons, artifacts;$/;"	m	struct:World::__anon1	file:
+tools	src/gamestate.c	/^		int tools, weapons, artifacts;$/;"	m	struct:World::__anon2	file:
 tw	src/wpl/wplInternal.h	/^	i16 tx, ty, tw, th;$/;"	m	struct:wplSprite
 tx	src/wpl/wplInternal.h	/^	i16 tx, ty, tw, th;$/;"	m	struct:wplSprite
 ty	src/wpl/wplInternal.h	/^	i16 tx, ty, tw, th;$/;"	m	struct:wplSprite
@@ -421,12 +448,13 @@ w	src/wpl/wplInternal.h	/^	f32 x, y, w, h, cx, cy;$/;"	m	struct:wplSprite
 w	src/wpl/wplInternal.h	/^	i64 w, h;$/;"	m	struct:wplTexture
 w	src/wpl/wplInternal.h	/^	int x1, y1, x2, y2, w, h;$/;"	m	struct:wplGlyph
 wbssecpy_mv	src/wpl/wpl.c	379;"	d	file:
-weapons	src/gamestate.c	/^		int tools, weapons, artifacts;$/;"	m	struct:World::__anon1	file:
+weapons	src/gamestate.c	/^		int tools, weapons, artifacts;$/;"	m	struct:World::__anon2	file:
 width	src/wpl/wplInternal.h	/^	i64 width, height;$/;"	m	struct:wplState
 width	src/wpl/wplInternal.h	/^	i64 width, height;$/;"	m	struct:wplWindowDef
 windowHandle	src/wpl/wplInternal.h	/^	void* windowHandle;$/;"	m	struct:wplWindow
-wood	src/gamestate.c	/^		int wood, food;$/;"	m	struct:World::__anon1	file:
+wood	src/gamestate.c	/^		int wood, food;$/;"	m	struct:World::__anon2	file:
 world	src/gamestate.c	/^	World* world;$/;"	m	struct:PlayState	file:
+worldGetResource	src/gamestate.c	/^int worldGetResource(int res)$/;"	f
 wplCopyMemory	src/wpl/wpl.c	/^void* wplCopyMemory(void *dest, const void *source, i64 size)$/;"	f
 wplCopyMemoryBlock	src/wpl/wpl.c	/^void wplCopyMemoryBlock(void* dest, const void* source, $/;"	f
 wplCreateFontContext	src/wpl/wpl.c	/^void* wplCreateFontContext(void* font, MemoryArena* arena)$/;"	f

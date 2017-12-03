@@ -1,125 +1,35 @@
-CreateEventAction(eventTurnAwayTravellers)
+CreateEventAction(eventDoNothing)
 {
-	return 0;
+	return ;
 }
 
-CreateEventAction(eventWelcomeTravellers)
+CreateEventAction(eventFoodForTools)
 {
-	return 0;
+	return ;
 }
 
-CreateEventAction(eventIgnoreHurtGatherers)
+CreateEventAction(eventWoodForTools)
 {
-	return 0;
+	return ;
 }
 
-CreateEventAction(eventSendSomeoneToHelpGatherers)
+CreateEventAction(eventFoodForWood)
 {
-	return 0;
+	return ;
 }
 
-CreateEventAction(eventSendToDefuse)
+CreateEventAction(eventWoodForFood)
 {
-	return 0;
+	return ;
 }
 
-CreateEventAction(eventIgnoreStranger)
+CreateEventAction(eventToolsForStuff)
 {
-	return 0;
+	return ;
 }
 
-CreateEventAction(eventSendToDefuseGatherer)
+CreateEventAction(eventWeaponsForStuff)
 {
-	return 0;
-}
-
-CreateEventAction(eventIgnoreStrangerGatherer)
-{
-	return 0;
-}
-
-CreateEventAction(eventSendToDefuseWoodcutter)
-{
-	return 0;
-}
-
-CreateEventAction(eventIgnoreStrangerWoodcutter)
-{
-	return 0;
-}
-
-CreateEventAction(eventExtraHungryEat)
-{
-	return 0;
-}
-
-CreateEventAction(eventExtraHungryNoEat)
-{
-	return 0;
-}
-
-CreateEventAction(eventWakeUpNapper)
-{
-	return 0;
-}
-
-CreateEventAction(eventLetThemSleep)
-{
-	return 0;
-}
-
-CreateEventAction(eventFreeFood)
-{
-	return 0;
-}
-
-CreateEventAction(eventIgnoreFood)
-{
-	return 0;
-}
-
-CreateEventAction(eventFreeWood)
-{
-	return 0;
-}
-
-CreateEventAction(eventIgnoreWood)
-{
-	return 0;
-}
-
-CreateEventAction(eventArgumentDefault)
-{
-	return 0;
-}
-
-CreateEventAction(eventSideWithA)
-{
-	return 0;
-}
-
-CreateEventAction(eventSideWithB)
-{
-	return 0;
-}
-
-CreateEventAction(eventSeparateTheTwo)
-{
-	return 0;
-}
-
-CreateEventAction(eventFightDefault)
-{
-	return 0;
-}
-
-CreateEventAction(eventBreakUpFight)
-{
-	return 0;
-}
-
-CreateEventAction(eventLetFightFinish)
-{
-	return 0;
+	return ;
 }
 

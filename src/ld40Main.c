@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <math.h>
+#include <time.h>
 
 #include "wpl/wpl.h"
 #include "vmath.c"
@@ -58,12 +59,13 @@ void init(wplWindow* window)
 	play.world = arenaPush(play.arena, sizeof(World));
 	
 	play.world->r = &play.world->randomState;
-	initRandom(play.world->r, 1123 * 0xBAF1);
+	initRandom(play.world->r, 1123 * time(0));
 
 	play.world->day = 1;
+	play.world->buildings.huts = 1;
 	play.world->resources.wood = 50;
 	play.world->resources.food = 24;
-	for(isize i = 0; i < 12; ++i) {
+	for(isize i = 0; i < 3; ++i) {
 		addActor(generateActor());
 		arenaPop(tempArena);
 	}
@@ -96,6 +98,7 @@ int main(int argc, char** argv)
 	wplState state = {0};
 	wplInputState inputState = {0};
 	state.input = &inputState;
+	state.input->keyboard = state.input->scancodes;
 	while(1) {
 		if(!wplUpdate(&window, &state)) break;
 		mouseX = state.mouseX;

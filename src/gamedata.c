@@ -1,3 +1,18 @@
+enum {
+	Resource_Food,
+	Resource_Wood,
+	Resource_Tools,
+	Resource_Weapons,
+	Resource_Artifacts,
+};
+
+string resourceNames[] = {
+	"Food", "Wood", "Tools", "Weapons", "Artifacts"
+};
+
+
+
+
 #define GenEventKinds \
 	M_event(Gift, 0x228800AA) \
 	M_event(Solo, 0x333333AA) \

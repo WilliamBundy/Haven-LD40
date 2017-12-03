@@ -50,7 +50,7 @@ f32 fontDrawTextWrapped(Spritefont* font, wplRenderGroup* group, f32 x, f32 y, s
 			pos.y += (font->glyphs[1].h + 2) * scale;
 		}
 
-		if((c == ' ' || c == '-') && pos.x > width) {
+		if((c == ' ' || c == '-') && (pos.x) > width) {
 			pos.x = 0;
 			pos.y += (font->glyphs[1].h + 2) * scale;
 			continue;
