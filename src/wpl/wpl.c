@@ -40,6 +40,9 @@
 #define WBTM_CRT_NO_REPLACE
 #include "thirdparty/wb_tm.c"
 
+
+#undef WBTM_STATIC_IMPLEMENTATION
+#undef WBTM_API
 #include "wplInternal.h"
 
 #include "wplShaders.h"
@@ -97,6 +100,7 @@ i64 wplCreateWindow(wplWindowDef* def, wplWindow* window)
 			(def->hidden ? SDL_WINDOW_HIDDEN : 0) |
 			SDL_WINDOW_OPENGL);
 
+	printf("%s\n", SDL_GetError());
 	window->windowHandle = windowHandle;
 
 	SDL_DisplayMode dm = {0};
@@ -105,8 +109,11 @@ i64 wplCreateWindow(wplWindowDef* def, wplWindow* window)
 	window->refreshRate = dm.refresh_rate;
 
 	SDL_GLContext glContext = SDL_GL_CreateContext(windowHandle);
+	//glContext = NULL;
 	window->glVersion = 33;
 	if(!glContext) {
+		fprintf(stderr, "Error: your computer does not support the minimum"  
+				"required version of OpenGL (3.3)\n (support may be introduced later)\n");
 		GLattr(CONTEXT_MAJOR_VERSION, 3);
 		GLattr(CONTEXT_MINOR_VERSION, 1);
 		GLattr(CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
@@ -149,7 +156,7 @@ i64 wplCreateWindow(wplWindowDef* def, wplWindow* window)
 
 	window->basePath = SDL_GetBasePath();
 
-	return windowHandle == NULL ? 1 : 0;
+	return windowHandle == NULL ? 0 : 1;
 }
 
 void wplShowWindow(wplWindow* wpl)
@@ -157,11 +164,12 @@ void wplShowWindow(wplWindow* wpl)
 	SDL_ShowWindow(wpl->windowHandle);
 }
 
-void wplInputUpdate(wplInputState* wplInput)
+wplInputState* wplInput;
+void wplInputUpdate()
 {
 	i8* keys;
 	isize i;
-	keys = wplInput.keycodes;
+	keys = wplInput->keycodes;
 	for(i = 0; i < SDL_NUM_SCANCODES; ++i) {
 		if(keys[i] == Button_JustDown) {
 			keys[i] = Button_Down;
@@ -170,7 +178,7 @@ void wplInputUpdate(wplInputState* wplInput)
 		}
 	}
 
-	keys = wplInput.scancodes;
+	keys = wplInput->scancodes;
 	for(i = 0; i < SDL_NUM_SCANCODES; ++i) {
 		if(keys[i] == Button_JustDown) {
 			keys[i] = Button_Down;
@@ -179,7 +187,7 @@ void wplInputUpdate(wplInputState* wplInput)
 		}
 	}
 
-	keys = wplInput.mouse;
+	keys = wplInput->mouse;
 	for(i = 0; i < 16; ++i) {
 		if(keys[i] == Button_JustDown) {
 			keys[i] = Button_Down;
@@ -188,7 +196,7 @@ void wplInputUpdate(wplInputState* wplInput)
 		}
 	}
 
-	wplInput.mouseWheel = 0;
+	wplInput->mouseWheel = 0;
 }
 
 i64 wplUpdate(wplWindow* window, wplState* state)
@@ -206,7 +214,8 @@ i64 wplUpdate(wplWindow* window, wplState* state)
 	}
 
 	lstate = *state;
-	wplInputUpdate(state->input);
+	wplInput = state->input;
+	wplInputUpdate();
 	while(SDL_PollEvent(&event))  {
 		switch(event.type) {
 			case SDL_QUIT:
@@ -214,27 +223,27 @@ i64 wplUpdate(wplWindow* window, wplState* state)
 				return 0;
 
 			case SDL_MOUSEBUTTONDOWN:
-				wplInput.mouse[event.button.button] = Button_JustDown;
+				wplInput->mouse[event.button.button] = Button_JustDown;
 				break;
 			case SDL_MOUSEBUTTONUP:
-				wplInput.mouse[event.button.button] = Button_JustUp;
+				wplInput->mouse[event.button.button] = Button_JustUp;
 				break;
 
 			case SDL_MOUSEWHEEL:
-				wplInput.mouseWheel = event.wheel.y;
+				wplInput->mouseWheel = event.wheel.y;
 				break;
 
 			case SDL_KEYDOWN:
-				wplInput.scancodes[event.key.keysym.scancode] = Button_JustDown;
+				wplInput->scancodes[event.key.keysym.scancode] = Button_JustDown;
 				if(event.key.keysym.sym < 1024) {
-					wplInput.keycodes[event.key.keysym.sym] = Button_JustDown;
+					wplInput->keycodes[event.key.keysym.sym] = Button_JustDown;
 				}
 				break;
 
 			case SDL_KEYUP:
-				wplInput.scancodes[event.key.keysym.scancode] = Button_JustUp;
+				wplInput->scancodes[event.key.keysym.scancode] = Button_JustUp;
 				if(event.key.keysym.sym < 1024) {
-					wplInput.keycodes[event.key.keysym.sym] = Button_JustUp;
+					wplInput->keycodes[event.key.keysym.sym] = Button_JustUp;
 				}
 				break;
 			case SDL_WINDOWEVENT:
@@ -272,7 +281,7 @@ i64 wplUpdate(wplWindow* window, wplState* state)
 	return 1;
 }
 
-ErrorCode wplRender(wplWindow* window)
+i64 wplRender(wplWindow* window)
 {
 	SDL_GL_SwapWindow(window->windowHandle);
 	window->elapsedTicks = SDL_GetTicks() - window->lastTicks;
@@ -284,47 +293,47 @@ ErrorCode wplRender(wplWindow* window)
 
 i64 wplKeyIsDown(i64 keycode)
 {
-	return wplInput.keyboard[keycode] >= Button_Down;
+	return wplInput->keyboard[keycode] >= Button_Down;
 }
 
 i64 wplKeyIsUp(i64 keycode)
 {
-	return wplInput.keyboard[keycode] <= Button_Up;
+	return wplInput->keyboard[keycode] <= Button_Up;
 }
 
 i64 wplKeyIsJustDown(i64 keycode)
 {
-	return wplInput.keyboard[keycode] == Button_JustDown;
+	return wplInput->keyboard[keycode] == Button_JustDown;
 }
 
 i64 wplKeyIsJustUp(i64 keycode)
 {
-	return wplInput.keyboard[keycode] == Button_JustUp;
+	return wplInput->keyboard[keycode] == Button_JustUp;
 }
 
 i64 wplMouseIsDown(i64 btn)
 {
-	return wplInput.mouse[btn] >= Button_Down;
+	return wplInput->mouse[btn] >= Button_Down;
 }
 
 i64 wplMouseIsUp(i64 btn)
 {
-	return wplInput.mouse[btn] <= Button_Up;
+	return wplInput->mouse[btn] <= Button_Up;
 }
 
 i64 wplMouseIsJustDown(i64 btn)
 {
-	return wplInput.mouse[btn] == Button_JustDown;
+	return wplInput->mouse[btn] == Button_JustDown;
 }
 
 i64 wplMouseIsJustUp(i64 btn)
 {
-	return wplInput.mouse[btn] == Button_JustUp;
+	return wplInput->mouse[btn] == Button_JustUp;
 }
 
 f32 wplGetMouseWheel() 
 {
-	return wplInput.mouseWheel;
+	return wplInput->mouseWheel;
 }
 
 
@@ -526,8 +535,7 @@ void* wplCopyMemory(void *dest, const void *source, i64 size)
 
 void wplWriteImage(string filename, i64 w, i64 h, void* data)
 {
-	stringValidate(&filename);
-	stbi_write_png(wplTempString, w, h, 4, data, w * 4);
+	stbi_write_png(filename, w, h, 4, data, w * 4);
 }
 
 u8* wplReadEntireFile(char* filename, isize* size_out, MemoryArena* arena)
@@ -652,3 +660,8 @@ f32 wplGetFontScale(void* font, i64 pixels)
 	return stbtt_ScaleForPixelHeight(font, pixels);
 }
 #endif
+
+void wplQuit()
+{
+	SDL_Quit();
+}

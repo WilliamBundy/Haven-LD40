@@ -1,0 +1,125 @@
+CreateEventAction(eventTurnAwayTravellers)
+{
+	return 0;
+}
+
+CreateEventAction(eventWelcomeTravellers)
+{
+	return 0;
+}
+
+CreateEventAction(eventIgnoreHurtGatherers)
+{
+	return 0;
+}
+
+CreateEventAction(eventSendSomeoneToHelpGatherers)
+{
+	return 0;
+}
+
+CreateEventAction(eventSendToDefuse)
+{
+	return 0;
+}
+
+CreateEventAction(eventIgnoreStranger)
+{
+	return 0;
+}
+
+CreateEventAction(eventSendToDefuseGatherer)
+{
+	return 0;
+}
+
+CreateEventAction(eventIgnoreStrangerGatherer)
+{
+	return 0;
+}
+
+CreateEventAction(eventSendToDefuseWoodcutter)
+{
+	return 0;
+}
+
+CreateEventAction(eventIgnoreStrangerWoodcutter)
+{
+	return 0;
+}
+
+CreateEventAction(eventExtraHungryEat)
+{
+	return 0;
+}
+
+CreateEventAction(eventExtraHungryNoEat)
+{
+	return 0;
+}
+
+CreateEventAction(eventWakeUpNapper)
+{
+	return 0;
+}
+
+CreateEventAction(eventLetThemSleep)
+{
+	return 0;
+}
+
+CreateEventAction(eventFreeFood)
+{
+	return 0;
+}
+
+CreateEventAction(eventIgnoreFood)
+{
+	return 0;
+}
+
+CreateEventAction(eventFreeWood)
+{
+	return 0;
+}
+
+CreateEventAction(eventIgnoreWood)
+{
+	return 0;
+}
+
+CreateEventAction(eventArgumentDefault)
+{
+	return 0;
+}
+
+CreateEventAction(eventSideWithA)
+{
+	return 0;
+}
+
+CreateEventAction(eventSideWithB)
+{
+	return 0;
+}
+
+CreateEventAction(eventSeparateTheTwo)
+{
+	return 0;
+}
+
+CreateEventAction(eventFightDefault)
+{
+	return 0;
+}
+
+CreateEventAction(eventBreakUpFight)
+{
+	return 0;
+}
+
+CreateEventAction(eventLetFightFinish)
+{
+	return 0;
+}
+

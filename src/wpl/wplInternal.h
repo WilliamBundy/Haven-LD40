@@ -77,6 +77,7 @@ struct wplVertex
 {
 	f32 x, y, u, v;
 	u32 color;
+	f32 flags;
 };
 
 struct wplShader
@@ -136,6 +137,7 @@ enum SpriteFlags
 	Sprite_FlipHoriz = 1<<8,
 	Sprite_FlipVert = 1<<9,
 	Sprite_Circle = 1<<10,
+	Sprite_NoAA = 1<<13,
 };
 
 enum ButtonState
@@ -167,6 +169,7 @@ i64 wplCreateWindow(wplWindowDef* def, wplWindow* window);
 
 void wplShowWindow();
 i64 wplUpdate(wplWindow* window, wplState* state);
+i64 wplRender(wplWindow* window);
 
 i64 wplKeyIsDown(i64 keycode);
 i64 wplKeyIsUp(i64 keycode);
@@ -200,7 +203,18 @@ void* wplLoadFont(wplWindow* window, string filename, MemoryArena* arena);
 f32 wplGetFontScale(void* font, i64 pixels);
 #endif
 
+wplSprite* wplGroupAdd(wplRenderGroup* group, 
+		i32 flags, 
+		f32 x, f32 y, 
+		f32 w, f32 h,
+		i16 tx, i16 ty, i16 tw, i16 th);
 
+wplSprite* wplGetSprite(wplRenderGroup* group);
+void wplGroupInit(wplWindow* window, wplRenderGroup* group, i64 cap, wplShader* shader, wplTexture* texture, MemoryArena* arena);
+void wplGroupDrawBasic(wplState* state, wplRenderGroup* group);
+void wplGroupDraw(wplWindow* window, wplState* state, wplRenderGroup* group);
+void wplUploadTexture(wplTexture* texture);
+wplTexture* wplLoadTexture(wplWindow* window, string filename, MemoryArena* arena);
 
 
 

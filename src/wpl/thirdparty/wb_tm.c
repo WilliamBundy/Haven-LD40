@@ -39,11 +39,6 @@
 */
 #pragma once
 
-
-#define WBTM_API
-#define WBTM_IMPLEMENTATION
-#define WBTM_CRT_NO_REPLACE
-
 #ifndef WBTM_NO_INCLUDE 
 #include <intrin.h>
 #include <emmintrin.h>
@@ -54,7 +49,6 @@ typedef __m128 vf128;
 typedef __m128i vi128;
 typedef float f32;
 typedef int i32;
-
 
 #ifdef WBTM_STATIC_IMPLEMENTATION
 #define WBTM_IMPLEMENTATION

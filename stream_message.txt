@@ -1,0 +1,30 @@
+it's hour 23/48 right now, so hopefully in the next 4 hours I can 
+move from something reasonably incomplete to something reasonably
+complete.	
+
+What do we choose events from? 
+Gift events
+happen randomly every hour?
+
+Solo events
+happen randomly per colonist every 2 hours?
+
+
+Conflict events
+group of people together based on job
+pick a person who has the highest "aggroChance"
+	based on mood and traits
+pick a second person who has the highest responseChance
+	based on mood and traits
+pick people with clashing personality traits
+or stressed people (low/negative mood)
+make them fight!
+
+Outsider events
+happen randomly every 3 hours?
+
+Story events
+as needed
+
+Tutorial events
+as needed

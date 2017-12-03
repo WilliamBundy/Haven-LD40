@@ -19,7 +19,7 @@ copy usr\lib\*.dll bin\ >nul 2>&1
 rem Kill task if it's running
 taskkill /IM %baseName%.exe 1>NUL 2>&1
 
-if exist %wirmpht% %wirmpht% -p -s -t src\%filePrefix%Main.c > src\%filePrefix%Generated.h
+rem if exist %wirmpht% %wirmpht% -p -s -t src\%filePrefix%Main.c > src\%filePrefix%Generated.h
 
 set disabled=/wd4477 ^
 	/wd4244 ^
@@ -30,7 +30,25 @@ set disabled=/wd4477 ^
 	/D_CRT_SECURE_NO_WARNINGS
 
 if "%~1"=="release" goto ReleaseBuild
-if "%~1"=="wpl" goto ReleaseBuild
+if "%~1"=="wpl" goto WplBuild
+
+%compiler%  /nologo ^
+	/TC ^
+	/Gd ^
+	/Zi ^
+	/c ^
+	/EHsc ^
+	/W3 ^
+	/fp:fast ^
+	%disabled% ^
+	/Iusr\include\ ^
+	src\wpl\wpl.c ^
+	/Fewpl.obj ^
+	/Fdwpl.pdb
+
+lib /NOLOGO /SUBSYSTEM:WINDOWS /LIBPATH:usr/lib wpl.obj SDL2.lib
+move *.pdb bin\ >NUL 2>&1
+del *.obj >NUL 2>&1
 
 %compiler%  /nologo ^
 	/TC ^

@@ -89,7 +89,7 @@ void initDefaultShader(wplWindow* window, wplShader* shader)
 	shader->uViewport = glGetUniformLocation(shader->program, "uViewport");
 }
 
-void wplGroupAdd(
+wplSprite* wplGroupAdd(
 		wplRenderGroup* group,
 		i32 flags,
 		f32 x, f32 y,
@@ -111,6 +111,7 @@ void wplGroupAdd(
 	s.th = th;
 	s.angle = 0;
 	group->sprites[group->count++] = s;
+	return group->sprites + group->count - 1;
 }
 
 wplSprite* wplGetSprite(wplRenderGroup* group)
@@ -171,6 +172,7 @@ void wplGroupInit(
 		i++;
 
 		glVertexAttribPointer(i, 4, GL_UNSIGNED_BYTE, 1, stride, primMember(color));
+		glVertexAttribPointer(i, 1, GL_FLOAT, 0, stride, primMember(flags));
 		glEnableVertexAttribArray(i);
 		i++;
 	} else {
@@ -208,6 +210,8 @@ void wplGroupInit(
 	}
 }
 
+float SoffsetX[] = {0.0, 0.5, 0.0, -0.5, -0.5, -0.5,  0.0,  0.5, 0.5};
+float SoffsetY[] = {0.0, 0.5, 0.5,  0.5,  0.0, -0.5, -0.5, -0.5, 0.0};
 static
 void groupProcessSprites(wplState* state, wplRenderGroup* group)
 {
@@ -228,9 +232,12 @@ void groupProcessSprites(wplState* state, wplRenderGroup* group)
 		uvrect[2] = (f32)(s->tx + s->tw); 
 		uvrect[3] = (f32)(s->ty + s->th);
 
-		vf128 xs = _mm_set_ps(-0.5, -0.5, 0.5, 0.5);
-		vf128 ys = _mm_set_ps(0.5, -0.5, 0.5, -0.5);
-		vf128 uvxs = _mm_set_ps(uvrect[2], uvrect[2], uvrect[0], uvrect[0]);
+		int f = s->flags & 0xf;
+		vf128 xs = _mm_add_ps(_mm_set_ps(-0.5, -0.5, 0.5, 0.5),
+				_mm_set1_ps(SoffsetX[f]));
+		vf128 ys = _mm_add_ps(_mm_set_ps(0.5, -0.5, 0.5, -0.5),
+				_mm_set1_ps(SoffsetY[f]));
+		vf128 uvxs = _mm_set_ps(uvrect[0], uvrect[0], uvrect[2], uvrect[2]);
 		vf128 uvys = _mm_set_ps(uvrect[3], uvrect[1], uvrect[3], uvrect[1]);
 
 
@@ -263,7 +270,7 @@ void groupProcessSprites(wplState* state, wplRenderGroup* group)
 		 * */
 		if(s->angle != 0) {
 			vf128 lsin, lcos;
-			wpl_sse2_sincos_ps(_mm_set_ps1(-s->angle), &lsin, &lcos);
+			wbtm_sse2_sincos_ps(_mm_set_ps1(-s->angle), &lsin, &lcos);
 
 			vf128 centerX = _mm_set_ps1(s->cx);
 			vf128 centerY = _mm_set_ps1(s->cy);
@@ -320,6 +327,7 @@ void groupProcessSprites(wplState* state, wplRenderGroup* group)
 			p[j].u = uvx.f[j];
 			p[j].v = uvy.f[j];
 			p[j].color = s->color;
+			p[j].flags = s->flags & Sprite_NoAA ? 1.0 : 0.0;
 		}
 	}
 }
@@ -429,9 +437,8 @@ wplTexture* wplLoadTexture(wplWindow* window, string filename, MemoryArena* aren
 	int t = 0;
 	wplTexture texture = {0};
 	//string lfilename = filename;
-	stringValidate(&filename);
 	char buf[2048];
-	snprintf(buf, 2048, "%s%s", window->basePath, wplTempString);
+	snprintf(buf, 2048, "%s%s", window->basePath, filename);
 	i32 w, h, bpp;
 	u8* data = stbi_load(buf, &w, &h, &bpp, STBI_rgb_alpha);
 	if(w == 0 || h == 0) {
