@@ -443,6 +443,7 @@ timer	src/gamestate.c	/^	int timer;$/;"	m	struct:Hut	file:
 tint	src/wpl/wplInternal.h	/^	u32 tint;$/;"	m	struct:wplRenderGroup
 title	src/wpl/wplInternal.h	/^	string title;$/;"	m	struct:wplWindowDef
 tools	src/gamestate.c	/^	int tools, weapons, artifacts;$/;"	m	struct:Resources	file:
+topSecretConfidentialLetterFromTheDeveloper	src/gamestate.c	/^string topSecretConfidentialLetterFromTheDeveloper = $/;"	v
 tw	src/wpl/wplInternal.h	/^	i16 tx, ty, tw, th;$/;"	m	struct:wplSprite
 tx	src/wpl/wplInternal.h	/^	i16 tx, ty, tw, th;$/;"	m	struct:wplSprite
 ty	src/wpl/wplInternal.h	/^	i16 tx, ty, tw, th;$/;"	m	struct:wplSprite

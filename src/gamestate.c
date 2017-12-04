@@ -532,6 +532,14 @@ int drawEventPanel(WorldEvent* e, wplState* state)
 	return eventResolved;
 }
 
+string topSecretConfidentialLetterFromTheDeveloper = 
+"It's fate you're playing this game. F-8. That's a lava lamp joke, right?\n"
+"Anyway\n"
+"To the player:\n"
+"    Thanks for playing. It's always great as a developer to know that people will try your game. This LD has been the first one in a long time that I've actually been able to buckle down and work, so it represents an achievement for me. I think I chose a good idea to run with, even if it is kinda grindy and slow. Enjoy your time with Haven; I had a blast making it. Hopefully the awful word wrap doesn't ruin it for you.\n"
+"And if you're reading this on github: you cheater. This was meant to be a secret!\n"
+"--Will\n";
+
 void playInit(wplWindow* window)
 {
 	play.arena = arenaBootstrap(gMemInfo, 0);
@@ -587,11 +595,13 @@ void playUpdate(wplWindow* window, wplState* state)
 		return;
 	}
 
-	/*
-	if(wplKeyIsJustDown(60)) {
-		world->resources.artifacts = 3;
+	
+	if(wplKeyIsDown(65)) {
+		drawTextSW(8, 8, topSecretConfidentialLetterFromTheDeveloper, 0.5, state->width / 2 - 64);
+		wplGroupDraw(window, state, textGroup);
+		return;
 	}
-	*/
+	
 
 
 	if(world->resources.artifacts >= 3) {
@@ -634,11 +644,28 @@ void playUpdate(wplWindow* window, wplState* state)
 
 		wplGroupDraw(window, state, textGroup);
 		return;
-
 	}
 
 	if(play.mode == Mode_MorningAssign) {
-		drawText(8, 8, "Good morning! Please assign workers:");
+		if(world->day == 1) {
+			drawText(8, 8, "Welcome to Haven! Don't forget to click the !!! boxes!");
+		} else if(world->day == 2) {
+			drawText(8, 8, "Morning! <insert lava lamp joke here>");
+		} else if(world->day == 3) {
+			drawText(8, 8, "Morning! You probably need another hut by now");
+		} else if(world->day == 4) {
+			drawText(8, 8, "To make huts faster, make tools--they're important!");
+		} else if(world->day == 5) {
+			drawText(8, 8, "Two artifacts will come to you in time. Just grow the Haven");
+		} else if(world->day == 6) {
+			drawText(8, 8, "An artifact is hidden, you'll need gatherers to find it");
+		} else if(world->day == 7) {
+			drawText(8, 8, "And, don't forget to make weapons, you'll need them too");
+		} else if(world->day == 8) {
+			drawText(8, 8, "Good morning! This is my last message, bye! Have fun!");
+		} else {
+			drawText(8, 8, "Good morning! Please assign workers:");
+		}
 		int anyworking = 0;
 		if(world->day < 5) {
 			for(isize i = 0; i < world->actorCount; ++i) {
