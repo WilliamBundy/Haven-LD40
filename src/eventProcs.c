@@ -203,8 +203,8 @@ CreateEventAction(eventSellToolsForStuff)
 	eventResult(event, "He sold you %d food");
 	eventResult(event, "and %d wood");
 	world->resources.tools -= event->optionReqs[0].amt;
-	int out = event->optionReqs[0].amt * 3;
-	int out2 = event->optionReqs[0].amt * 2;
+	int out = event->optionReqs[0].amt * 10;
+	int out2 = event->optionReqs[0].amt * 8;
 	int r = getRandomRange(world->r, 
 			out * 0.75, out * 1.5) + 1;
 	world->resources.food += r;
@@ -223,8 +223,8 @@ CreateEventAction(eventSellWeaponsForStuff)
 	eventResult(event, "He sold you %d food");
 	eventResult(event, "and %d wood");
 	world->resources.weapons -= event->optionReqs[0].amt;
-	int out = event->optionReqs[0].amt * 4;
-	int out2 = event->optionReqs[0].amt * 3;
+	int out = event->optionReqs[0].amt * 20;
+	int out2 = event->optionReqs[0].amt * 16;
 	int r = getRandomRange(world->r, 
 			out * 0.75, out * 1.5) + 1;
 	world->resources.food += r;
@@ -642,14 +642,14 @@ void createEventTemplates(WorldEvent* events, isize* eventCount)
 	EventStart("Someone was extra hungry", 1, 1)
 		EventSetTimeout(1, 2)
 		EventKind(Solo)
-		EventOption("Let them eat more", eventExtraHungryEat);
+		EventOption("Let %s eat more", eventExtraHungryEat);
 		EventOption("Deny them the food they want", eventExtraHungryNoEat);
 	EventEnd;
 
 	EventStart("Someone decided to take a nap", 1, 1)
 		EventSetTimeout(1, 2)
 		EventKind(Solo)
-		EventOption("Wake them up! No slacking allowed!", eventWakeUpNapper);
+		EventOption("Wake %s up! No slacking allowed!", eventWakeUpNapper);
 		EventOption("Let them sleep; they could do with the rest", eventLetThemSleep);
 	EventEnd;
 
@@ -677,6 +677,25 @@ void createEventTemplates(WorldEvent* events, isize* eventCount)
 		EventDefaultOption(eventDoNothing);
 	EventEnd;
 
+	EventStart("You found some wood", 1, 1)
+		EventSetTimeout(1, 2)
+		EventKind(Gift)
+		EventOption("Nice!", eventFreeWood);
+		EventOption("Ignore it", eventDoNothing);
+		EventDefaultOption(eventDoNothing);
+	EventEnd;
+
+	EventStart("A stranger passes through", 1, 1)
+		EventSetTimeout(3, 4)
+		EventKind(Outsider)
+		EventString("An old man visits your haven")
+		EventString("He says he'll tell you a story, if you listen")
+		EventNegResult("His story is passed down from generations")
+		EventResult("He says this is not the original home of mankind")
+		EventResult("and that we're all descended from a small group of settlers")
+		EventOption("Listen to what he has to say", eventDoNothing)
+	EventEnd;
+
 	EventStart("A stranger passes through", 1, 1)
 		EventSetTimeout(3, 4)
 		EventKind(Outsider)
@@ -702,6 +721,76 @@ void createEventTemplates(WorldEvent* events, isize* eventCount)
 
 
 	minPopNeeded = 4;
+	EventStart("A stranger passes through", 1, 1)
+		EventSetTimeout(3, 4)
+		EventKind(Outsider)
+		EventString("An old man visits your haven")
+		EventString("He says he'll tell you a story, if you listen")
+		EventNegResult("His story is advice")
+		EventResult("He talks of a boy who built a tool")
+		EventResult("to build a better tool, and a better tool, and so on")
+		EventResult("Eventually the boy could build anything, really fast")
+		EventResult("The old man smiles and leaves")
+		EventOption("Listen to what he has to say", eventDoNothing)
+	EventEnd;
+
+	EventStart("A stranger passes through", 1, 1)
+		EventSetTimeout(3, 4)
+		EventKind(Outsider)
+		EventString("An old man visits your haven")
+		EventString("He says he'll tell you a story, if you listen")
+		EventNegResult("His story is about the origin of the traders")
+		EventResult("Or rather, the lack of them.")
+		EventResult("He seems to think from his travels")
+		EventResult("that the traders seem to trade at an almost-fixed rate")
+		EventResult("The old man smiles and leaves")
+		EventOption("Listen to what he has to say", eventDoNothing)
+	EventEnd;
+
+	EventStart("Traders visit, selling wood", 1, 1)
+		EventSetTimeout(3, 6)
+		EventKind(Outsider)
+		EventDefaultOption(eventDoNothing)
+		EventNegResult("Disappointed, they shake their head and walk away")
+		EventString("A few traders have arrived! They are willing to sell wood for food")
+		EventOption("Sell!", eventSellFoodForWood)
+		EventOptionReq(Resource_Food, 5, 20)
+		EventOption("Decline their offer", eventDoNothing)
+	EventEnd;
+
+	EventStart("Traders visit, selling food ", 1, 1)
+		EventSetTimeout(3, 6)
+		EventKind(Outsider)
+		EventDefaultOption(eventDoNothing)
+		EventNegResult("Disappointed, they shake their head and walk away")
+		EventString("A few traders have arrived! They are willing to sell food for wood")
+		EventOption("Sell!", eventSellWoodForFood)
+		EventOptionReq(Resource_Wood, 2, 10)
+		EventOption("Decline their offer", eventDoNothing)
+	EventEnd;
+
+	EventStart("Traders visit, selling wood", 1, 1)
+		EventSetTimeout(3, 6)
+		EventKind(Outsider)
+		EventDefaultOption(eventDoNothing)
+		EventNegResult("Disappointed, they shake their head and walk away")
+		EventString("A few traders have arrived! They are willing to sell wood for food")
+		EventOption("Sell!", eventSellFoodForWood)
+		EventOptionReq(Resource_Food, 5, 20)
+		EventOption("Decline their offer", eventDoNothing)
+	EventEnd;
+
+	EventStart("Traders visit, selling food ", 1, 1)
+		EventSetTimeout(3, 6)
+		EventKind(Outsider)
+		EventDefaultOption(eventDoNothing)
+		EventNegResult("Disappointed, they shake their head and walk away")
+		EventString("A few traders have arrived! They are willing to sell food for wood")
+		EventOption("Sell!", eventSellWoodForFood)
+		EventOptionReq(Resource_Wood, 2, 10)
+		EventOption("Decline their offer", eventDoNothing)
+	EventEnd;
+
 	EventStart("Traders visit, selling wood", 1, 1)
 		EventSetTimeout(3, 6)
 		EventKind(Outsider)
@@ -732,6 +821,13 @@ void createEventTemplates(WorldEvent* events, isize* eventCount)
 		EventOption("Go to help them up", eventDoNothing);
 	EventEnd;
 
+	EventStart("Someone burped really loud!", 1, 1)
+		EventSetTimeout(1, 2)
+		EventKind(Accident)
+		EventDefaultOption(eventDoNothing)
+		EventNegResult("%s thinks it was funny")
+		EventOption("That was startling", eventDoNothing);
+	EventEnd;
 
 	EventStart("Some food started to rot", 1, 1)
 		EventSetTimeout(1, 2)
@@ -795,9 +891,25 @@ void createEventTemplates(WorldEvent* events, isize* eventCount)
 		EventOption("Hope they make it", eventIgnoreHurtGatherers);
 	EventEnd;
 
+	EventStart("It seems like...", 2, 2)
+		EventKind(Conflict)
+		EventString("some people don't get along too well")
+		EventNegResult("They'll have to learn to deal with it")
+		EventOption("Such is life", eventInsulted)
+	EventEnd;
+
+	EventStart("It seems like...", 2, 2)
+		EventKind(Conflict)
+		EventString("some people don't get along too well")
+		EventNegResult("They'll have to learn to deal with it")
+		EventOption("Such is life", eventInsulted)
+	EventEnd;
+
+
 	EventStart("Someone insulted someone!", 2, 2)
 		EventKind(Conflict)
 		EventString("%s was insulted!")
+		EventNegResult("They'll get over it in time")
 		EventOption("Nothing you can do about it now", eventInsulted)
 	EventEnd;
 
@@ -811,6 +923,7 @@ void createEventTemplates(WorldEvent* events, isize* eventCount)
 		EventOption("Separate the two", eventSeparateArgument);
 	EventEnd;
 
+	minPopNeeded = 7;
 	EventStart("Some people started fighting", 2, 2)
 		EventKind(Conflict)
 		EventSetTimeout(1, 2)
@@ -822,7 +935,31 @@ void createEventTemplates(WorldEvent* events, isize* eventCount)
 	EventEnd;
 	
 	//Trader block
-	minPopNeeded = 8;
+	minPopNeeded = 10;
+	EventStart("A stranger passes through", 1, 1)
+		EventSetTimeout(3, 4)
+		EventKind(Outsider)
+		EventString("An old man visits your haven")
+		EventString("He says he'll tell you a story, if you listen")
+		EventNegResult("His story is a warning")
+		EventResult("He says that bandits are afoot, and that you ")
+		EventResult("must have weapons to defend yourself")
+		EventResult("Otherwise, he warns, much may be lost in the disarray")
+		EventOption("Listen to what he has to say", eventDoNothing)
+	EventEnd;
+
+	EventStart("A stranger passes through", 1, 1)
+		EventSetTimeout(3, 4)
+		EventKind(Outsider)
+		EventString("An old man visits your haven")
+		EventString("He says he'll tell you a story, if you listen")
+		EventNegResult("His story is passed down from generations")
+		EventResult("He says that somewhere out there is the planet Earth")
+		EventResult("Where humans all come from originally")
+		EventResult("but something awful happened, so they had to leave")
+		EventOption("Listen to what he has to say", eventDoNothing)
+	EventEnd;
+
 	EventStart("A stranger passes through", 1, 1)
 		EventSetTimeout(3, 4)
 		EventKind(Outsider)
@@ -919,6 +1056,30 @@ void createEventTemplates(WorldEvent* events, isize* eventCount)
 		EventOptionReq(Resource_Wood, 5, 20)
 		EventOption("Decline their offer", eventDoNothing)
 	EventEnd;
+
+	EventStart("Traders have tools for sale", 1, 1)
+		EventSetTimeout(3, 6)
+		EventKind(Outsider)
+		EventDefaultOption(eventDoNothing)
+		EventNegResult("Unperturbed, they thank you for your time and move on")
+		EventString("A few traders have arrived! They are willing to sell tools for food")
+		EventOption("Sell!", eventSellFoodForTools)
+		EventOptionReq(Resource_Food, 10, 30)
+		EventOption("Decline their offer", eventDoNothing)
+	EventEnd;
+
+	EventStart("Traders have tools for sale", 1, 1)
+		EventSetTimeout(3, 6)
+		EventKind(Outsider)
+		EventDefaultOption(eventDoNothing)
+		EventNegResult("")
+		EventNegResult("Unperturbed, they thank you for your time and move on")
+		EventString("A few traders have arrived! They are willing to sell tools for wood")
+		EventOption("Sell!", eventSellWoodForTools)
+		EventOptionReq(Resource_Wood, 5, 20)
+		EventOption("Decline their offer", eventDoNothing)
+	EventEnd;
+
 
 	minPopNeeded = 12;
 	//Selling tools/weapons
