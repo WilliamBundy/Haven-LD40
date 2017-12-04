@@ -12,9 +12,95 @@ CreateEventAction(eventDoNothing)
 	return 0;
 }
 
+CreateEventAction(eventRaidFight)
+{
+	event->resultText = "You fight for your lives!";
+	eventResult(event, "You chase off the raiders");
+	eventResult(event, "but some people got hurt in the battle");
+	isize damage = getRandomRange(world->r, 4, world->actorCount / 3);
+	for(isize i = 0; i < world->actorCount / 3; ++i) {
+		world->actors[getRandomRange(world->r, 0, world->actorCount)].health--;
+	}
+
+	return 0;
+}
+
+CreateEventAction(eventRaidFightBad)
+{
+	event->resultText = "You fight for your lives!";
+	eventResult(event, "You don't have enough weapons for everyone though");
+	eventResult(event, "A lot of people got hurt though");
+	isize damage = getRandomRange(world->r, world->actorCount / 3, world->actorCount);
+	for(isize i = 0; i < world->actorCount / 3; ++i) {
+		world->actors[getRandomRange(world->r, 0, world->actorCount)].health--;
+	}
+
+	return 0;
+}
+
+
+CreateEventAction(eventFoodRotSmall)
+{
+	event->resultText = "You throw out the rotten stuff just in time";
+	eventResult(event, "You only had to throw out %d food");
+
+	int r = getRandomRange(world->r, 3, 6);
+	event->resultValues[0] = r;
+	world->resources.food -= r;
+	if(world->resources.food < 0) world->resources.food = 0;
+	return 0;
+}
+
+CreateEventAction(eventFoodRotBig)
+{
+	event->resultText = "So much had gotten rotten, it was awful";
+	eventResult(event, "You only had to throw out %d food");
+	int r = getRandomRange(world->r, 5, 12);
+	event->resultValues[0] = r;
+	world->resources.food -= r;
+	if(world->resources.food < 0) world->resources.food = 0;
+	return 0;
+}
+
+CreateEventAction(eventBadTimber)
+{
+
+	event->resultText = "It's all gnarled and twisted!";
+	eventResult(event, "Turns out you had %d useless wood");
+	int r = getRandomRange(world->r, 1, 3);
+	event->resultValues[0] = r;
+	world->resources.wood -= r;
+	if(world->resources.wood < 0) world->resources.wood = 0;
+	return 0;
+}
+
+CreateEventAction(eventRaidRun)
+{
+	event->resultText = "Hiding in the trees, the bandits ransack the haven";
+	event->resultValues[0] = world->resources.food / 2;
+	event->resultValues[1] = world->resources.wood / 2;
+	event->resultValues[2] = world->resources.tools / 3;
+
+	world->resources.food -= event->resultValues[0];
+	world->resources.wood -= event->resultValues[1];
+	world->resources.tools -= event->resultValues[2];
+
+	eventResult(event, "Everyone is safe, but");
+	eventResult(event, "%d food was stolen");
+	eventResult(event, "%d wood was stolen");
+	eventResult(event, "%d tools were stolen");
+	eventResult(event, "and a bunch of people got hurt in the confusion");
+
+	for(isize i = 0; i < world->actorCount / 4; ++i) {
+		world->actors[getRandomRange(world->r, 0, world->actorCount)].health--;
+	}
+
+	return 0;
+}
+
 CreateEventAction(eventWelcomeTravellers)
 {
-	event->resultText = "Thanking you, they join your ranks.";
+	event->resultText = "Thanking you, they join the haven";
 	if(world->day < 5) event->involveCount = 1;
 	for(isize i = 0; i < event->involveCount; ++i) {
 		if(world->actorCount >= world->buildings.huts * 6) {
@@ -36,7 +122,7 @@ CreateEventAction(eventSellFoodForTools)
 	event->resultText = "The trader smiles, happy with his purchase";
 	eventResult(event, "He sold you %d tools");
 	world->resources.food -= event->optionReqs[0].amt;
-	int out = event->optionReqs[0].amt / 5 + 1;
+	int out = event->optionReqs[0].amt / 10 + 1;
 	int r = getRandomRange(world->r, 
 			out * 0.75, out * 1.5) + 1;
 	world->resources.tools += r;
@@ -51,7 +137,7 @@ CreateEventAction(eventSellWoodForTools)
 	event->resultText = "The trader smiles, happy with his purchase";
 	eventResult(event, "He sold you %d tools");
 	world->resources.wood -= event->optionReqs[0].amt;
-	int out = event->optionReqs[0].amt / 2 + 1;
+	int out = event->optionReqs[0].amt / 8 + 1;
 	int r = getRandomRange(world->r, 
 			out * 0.75, out * 1.5) + 1;
 	world->resources.tools += r;
@@ -64,7 +150,7 @@ CreateEventAction(eventSellFoodForWeapons)
 	event->resultText = "The trader smiles, happy with his purchase";
 	eventResult(event, "He sold you %d weapons");
 	world->resources.food -= event->optionReqs[0].amt;
-	int out = event->optionReqs[0].amt / 8 + 1;
+	int out = event->optionReqs[0].amt / 10 + 1;
 	int r = getRandomRange(world->r, 
 			out * 0.75, out * 1.5) + 1;
 	world->resources.weapons += r;
@@ -77,7 +163,7 @@ CreateEventAction(eventSellWoodForWeapons)
 	event->resultText = "The trader smiles, happy with his purchase";
 	eventResult(event, "He sold you %d weapons");
 	world->resources.wood -= event->optionReqs[0].amt;
-	int out = event->optionReqs[0].amt / 4 + 1;
+	int out = event->optionReqs[0].amt / 8 + 1;
 	int r = getRandomRange(world->r, 
 			out * 0.75, out * 1.5) + 1;
 	world->resources.weapons += r;
@@ -103,7 +189,7 @@ CreateEventAction(eventSellWoodForFood)
 	event->resultText = "The trader smiles, happy with his purchase";
 	eventResult(event, "He sold you %d food");
 	world->resources.wood -= event->optionReqs[0].amt;
-	int out = event->optionReqs[0].amt * 1 + 1;
+	int out = event->optionReqs[0].amt * 3 / 2 + 1;
 	int r = getRandomRange(world->r, 
 			out * 0.75, out * 1.5) + 1;
 	world->resources.food += r;
@@ -152,7 +238,7 @@ CreateEventAction(eventSellWeaponsForStuff)
 
 CreateEventAction(eventIgnoreHurtGatherers)
 {
-	event->resultText = "They're hurt and have to stop and rest for the day";
+	event->resultText = "%s got hurt and needs to rest";
 	if(event->involves[0]) {
 		i32 mod = 1;
 		for(isize i = 0; i < 4; ++i) {
@@ -172,18 +258,38 @@ CreateEventAction(eventIgnoreHurtGatherers)
 
 CreateEventAction(eventSendSomeoneToHelpGatherers)
 {
-	event->resultText = "Getting to them in time, the person who was hurt doesn't get injured";
+	event->resultText = "They get to %s in time";
 	if(event->involves[0]) {
-		event->involves[0]->job = ActorJob_None;
-		eventResult(event, "But they still need to rest");
+		event->involves[0]->dailyWorkMod = 0.75;
+		eventResult(event, "They aren't hurt, but the incident took some time");
 	}
 	return 0;
 }
+
+CreateEventAction(eventCraftDamage)
+{
+	isize r = getRandomRange(world->r, 1, 3);
+	world->craftWorkNeeded += r;
+	event->resultValues[0] = r;
+	eventResult(event, "It set you back by %d work");
+	return 0;
+}
+
+CreateEventAction(eventBuildDamage)
+{
+	isize r = getRandomRange(world->r, 2, 5);
+	world->buildWorkNeeded += r;
+	event->resultValues[0] = r;
+	eventResult(event, "It set you back by %d work");
+	return 0;
+}
+
 
 CreateEventAction(eventExtraHungryEat)
 {
 	if(event->involves[0]) {
 		if(world->resources.food > 1) {
+			event->resultText =  "%s ate some food, and felt better";
 			event->involves[0]->food += 100;
 			world->resources.food--;
 			event->resultValues[0] = 100;
@@ -195,6 +301,8 @@ CreateEventAction(eventExtraHungryEat)
 CreateEventAction(eventExtraHungryNoEat)
 {
 	if(event->involves[0]) {
+		event->resultText ="%s is unhappy being hungry";
+		eventResult(event, "*stomach grumbling sounds*");
 		event->involves[0]->food -= 50;
 		event->involves[0]->mood--;
 		event->resultValues[0] = 50;
@@ -204,6 +312,7 @@ CreateEventAction(eventExtraHungryNoEat)
 
 CreateEventAction(eventWakeUpNapper)
 {
+	event->resultText ="%s is unhappy about being woken up";
 	if(event->involves[0]) {
 		event->involves[0]->mood--;
 		event->involves[0]->mood--;
@@ -213,6 +322,7 @@ CreateEventAction(eventWakeUpNapper)
 
 CreateEventAction(eventLetThemSleep)
 {
+	event->resultText ="%s happily sleeps";
 	if(event->involves[0]) {
 		event->involves[0]->mood += 2;
 		event->involves[0]->job = ActorJob_None;
@@ -223,7 +333,12 @@ CreateEventAction(eventLetThemSleep)
 
 CreateEventAction(eventFreeFood)
 {
+	if(world->day > 10) {
+		event->resultText = "Oh...";
+		eventResult(event, "It's rotten...");
+	}
 	isize r = getRandomRange(world->r, world->actorCount/2, world->actorCount * 1.5);
+	if(r == 0) r = 1;
 	world->resources.food += r;
 	event->resultText = "Eagerly, you gather the food";
 	eventResult(event, "You found %d food");
@@ -234,6 +349,8 @@ CreateEventAction(eventFreeFood)
 CreateEventAction(eventFreeWood)
 {
 	int res = getRandomRange(world->r, 1 * world->day, 3 * world->day);
+	if(res > 10) res = 10;
+	if(res == 0) res = 1;
 	world->resources.food += res;
 	event->resultValues[0] = res;
 
@@ -347,6 +464,37 @@ CreateEventAction(eventInsulted)
 	return 0;
 }
 
+CreateEventAction(eventFeltHappy)
+{
+	if(event->involves[0]) {
+		event->resultText = "%s felt good today";
+		eventResult(event, "They just wanted to tell you.");
+		event->involves[0]->mood++;
+	}
+	return 0;
+}
+
+CreateEventAction(eventFeltRelaxed)
+{
+	if(event->involves[0]) {
+		event->resultText = "%s felt good today";
+		eventResult(event, "They just wanted to tell you.");
+		event->involves[0]->daysConsecutiveWork = 0;
+	}
+	return 0;
+}
+
+CreateEventAction(eventRecoveredQuickly)
+{
+	if(event->involves[0]) {
+		event->resultText = "%s felt energized";
+		eventResult(event, "They just wanted to tell you.");
+		event->involves[0]->health++;
+	}
+	return 0;
+}
+
+
 CreateEventAction(eventBuyArtifact)
 {
 	event->resultText = "Smiling, she hands over the artifact";
@@ -375,7 +523,8 @@ CreateEventAction(eventFightMachine)
 	e->involveCountMax = involvedCountMax; \
 	e->minPopNeeded = minPopNeeded;\
 	e->optionRequiresSelection = -1;\
-	e->jobSpecific = -1;
+	e->jobSpecific = -1; \
+	e->defaultAction = eventDoNothing;
 #define EventKind(k) e->kind = Event_##k;
 #define EventSetTimeout(mn, mx) e->timeoutMin = mn; e->timeoutMax = mx;
 #define EventSelectCount(mn, mx) e->peopleToSelectMin = mn; e->peopleToSelectMax = mx;
@@ -389,6 +538,7 @@ CreateEventAction(eventFightMachine)
 	e->optionReqs[e->optionCount-1].amtMax = mx;
 #define EventDefaultOption(result) e->defaultAction = result;
 #define EventNegResult(r) e->negativeResultText = r;
+#define EventResult(r) eventResult(e, r);
 #define EventJobSpecific(job) e->jobSpecific = job;
 #define EventEnd }
 
@@ -456,145 +606,37 @@ void createEventTemplates(WorldEvent* events, isize* eventCount)
 		EventOptionReq(Resource_Weapons, 10, 10)
 		EventOptionReqSelected
 		EventSelectCount(10, 10)
-		EventOption("We do not have enough weapons to fight the machine. It shall have to wait another day.", eventDoNothing)
+		EventOption("We do not have enough weaponry to fight the machine. It shall have to wait another day.", eventDoNothing)
+	EventEnd;
+
+	EventStart("Raid incoming!", 1, 1)
+		EventSetTimeout(24, 24)
+		EventKind(Raid)
+		EventDefaultOption(eventRaidRun)
+		EventString("Bandits are coming for your haven! Will you defend or flee?")
+		EventOption("Defend", eventRaidFight)
+		EventOptionReq(Resource_Weapons, 5, 20)
+		EventOption("Defend with what we have", eventRaidFightBad)
+		EventOption("Flee", eventRaidRun);
 	EventEnd;
 
 
-
-	//Trader block
-
-	EventStart("Traders will buy food", 1, 1)
-		EventSetTimeout(3, 6)
-		EventKind(Outsider)
-		EventDefaultOption(eventDoNothing)
-		EventNegResult("Unperturbed, they thank you for your time and move on")
-		EventString("A few traders have arrived! They are willing to sell weapons for food")
-		EventOption("Sell!", eventSellFoodForWeapons)
-		EventOptionReq(Resource_Food, 20, 40)
-		EventOption("Decline their offer", eventDoNothing)
-	EventEnd;
-
-	EventStart("Traders will buy wood", 1, 1)
-		EventSetTimeout(3, 6)
-		EventKind(Outsider)
-		EventDefaultOption(eventDoNothing)
-		EventNegResult("")
-		EventNegResult("Unperturbed, they thank you for your time and move on")
-		EventString("A few traders have arrived! They are willing to sell weapons for wood")
-		EventOption("Sell!", eventSellWoodForWeapons)
-		EventOptionReq(Resource_Wood, 10, 30)
-		EventOption("Decline their offer", eventDoNothing)
-	EventEnd;
-
-	EventStart("Traders will buy food", 1, 1)
-		EventSetTimeout(3, 6)
-		EventKind(Outsider)
-		EventDefaultOption(eventDoNothing)
-		EventNegResult("Unperturbed, they thank you for your time and move on")
-		EventString("A few traders have arrived! They are willing to sell tools for food")
-		EventOption("Sell!", eventSellFoodForTools)
-		EventOptionReq(Resource_Food, 10, 30)
-		EventOption("Decline their offer", eventDoNothing)
-	EventEnd;
-
-	EventStart("Traders will buy wood", 1, 1)
-		EventSetTimeout(3, 6)
-		EventKind(Outsider)
-		EventDefaultOption(eventDoNothing)
-		EventNegResult("")
-		EventNegResult("Unperturbed, they thank you for your time and move on")
-		EventString("A few traders have arrived! They are willing to sell tools for wood")
-		EventOption("Sell!", eventSellWoodForTools)
-		EventOptionReq(Resource_Wood, 5, 20)
-		EventOption("Decline their offer", eventDoNothing)
-	EventEnd;
-
-	//wood/food
-	EventStart("Traders will buy food", 1, 1)
-		EventSetTimeout(3, 6)
-		EventKind(Outsider)
-		EventDefaultOption(eventDoNothing)
-		EventNegResult("Unperturbed, they thank you for your time and move on")
-		EventString("A few traders have arrived! They are willing to sell wood for food")
-		EventOption("Sell!", eventSellFoodForWood)
-		EventOptionReq(Resource_Food, 5, 20)
-		EventOption("Decline their offer", eventDoNothing)
-	EventEnd;
-
-	EventStart("Traders will buy wood", 1, 1)
-		EventSetTimeout(3, 6)
-		EventKind(Outsider)
-		EventDefaultOption(eventDoNothing)
-		EventNegResult("Unperturbed, they thank you for your time and move on")
-		EventString("A few traders have arrived! They are willing to sell food for wood")
-		EventOption("Sell!", eventSellWoodForFood)
-		EventOptionReq(Resource_Wood, 2, 10)
-		EventOption("Decline their offer", eventDoNothing)
-	EventEnd;
-
-	EventStart("Traders will buy food", 1, 1)
-		EventSetTimeout(3, 6)
-		EventKind(Outsider)
-		EventDefaultOption(eventDoNothing)
-		EventNegResult("Disappointed, they shake their head and walk away")
-		EventString("A few traders have arrived! They are willing to sell wood for food")
-		EventOption("Sell!", eventSellFoodForWood)
-		EventOptionReq(Resource_Food, 5, 20)
-		EventOption("Decline their offer", eventDoNothing)
-	EventEnd;
-
-	EventStart("Traders will buy wood", 1, 1)
-		EventSetTimeout(3, 6)
-		EventKind(Outsider)
-		EventDefaultOption(eventDoNothing)
-		EventNegResult("Disappointed, they shake their head and walk away")
-		EventString("A few traders have arrived! They are willing to sell food for wood")
-		EventOption("Sell!", eventSellWoodForFood)
-		EventOptionReq(Resource_Wood, 2, 10)
-		EventOption("Decline their offer", eventDoNothing)
-	EventEnd;
-
-	//Selling tools/weapons
-	EventStart("Traders will buy tools", 1, 1)
-		EventSetTimeout(3, 6)
-		EventKind(Outsider)
-		EventDefaultOption(eventDoNothing)
-		EventNegResult("Unperturbed, they thank you for your time and move on")
-		EventString("A few traders have arrived! They are willing to sell resources for tools")
-		EventOption("Sell!", eventSellToolsForStuff)
-		EventOptionReq(Resource_Tools, 1, 5)
-		EventOption("Decline their offer", eventDoNothing)
-	EventEnd;
-
-	EventStart("Traders will buy weapons", 1, 1)
-		EventSetTimeout(3, 6)
-		EventKind(Outsider)
-		EventDefaultOption(eventDoNothing)
-		EventNegResult("Unperturbed, they thank you for your time and move on")
-		EventString("A few traders have arrived! They are willing to sell resources for weapons")
-		EventOption("Sell!", eventSellWeaponsForStuff)
-		EventOptionReq(Resource_Weapons, 1, 5)
-		EventOption("Decline their offer", eventDoNothing)
-	EventEnd;
-	
-	//TODO(will) 
-	//	- trader artifact
-	//	- cave artifact
-	//	- machine/raid artifact
-
-	// Accidents
-
-	EventStart("Some people were hurt while gathering food", 1, 3)
+	EventStart("Someone felt happy today", 1, 1)
 		EventSetTimeout(1, 2)
-		EventKind(Accident)
-		EventDefaultOption(eventIgnoreHurtGatherers)
-		EventJobSpecific(ActorJob_FoodGather)
-		EventSelectCount(1, 1)
-		EventString("A few people were attacked by wild animals while foraging for food. "\
-				"Will you send someone to help them?")
-		EventOption("Send Someone", eventSendSomeoneToHelpGatherers);
-		EventOptionReqSelected;
-		EventOption("Hope they make it", eventIgnoreHurtGatherers);
+		EventKind(Solo)
+		EventOption("Uh, okay?", eventFeltHappy);
+	EventEnd;
+
+	EventStart("Someone felt relaxed today", 1, 1)
+		EventSetTimeout(1, 2)
+		EventKind(Solo)
+		EventOption("Uh, okay?", eventFeltRelaxed);
+	EventEnd;
+
+	EventStart("Someone recovered quickly", 1, 1)
+		EventSetTimeout(1, 2)
+		EventKind(Solo)
+		EventOption("Uh, okay?", eventRecoveredQuickly);
 	EventEnd;
 
 	EventStart("Someone was extra hungry", 1, 1)
@@ -609,6 +651,14 @@ void createEventTemplates(WorldEvent* events, isize* eventCount)
 		EventKind(Solo)
 		EventOption("Wake them up! No slacking allowed!", eventWakeUpNapper);
 		EventOption("Let them sleep; they could do with the rest", eventLetThemSleep);
+	EventEnd;
+
+	EventStart("You found... something", 0, 0)
+		EventSetTimeout(1, 2)
+		EventKind(Gift)
+		EventString("...but you don't want it.")
+		EventOption("Ignore it", eventDoNothing);
+		EventDefaultOption(eventDoNothing);
 	EventEnd;
 
 	EventStart("You found some food", 0, 0)
@@ -627,9 +677,127 @@ void createEventTemplates(WorldEvent* events, isize* eventCount)
 		EventDefaultOption(eventDoNothing);
 	EventEnd;
 
+	EventStart("A stranger passes through", 1, 1)
+		EventSetTimeout(3, 4)
+		EventKind(Outsider)
+		EventString("An old man visits your haven")
+		EventString("He says he'll tell you a story, if you listen")
+		EventNegResult("His story is about adventure and hardship")
+		EventResult("He mentions that healthy people get more done")
+		EventResult("He beats his chest, talking about his exploits in the past")
+		EventOption("Listen to what he has to say", eventDoNothing)
+	EventEnd;
+
+	EventStart("A stranger passes through", 1, 1)
+		EventSetTimeout(3, 4)
+		EventKind(Outsider)
+		EventString("An old man visits your haven")
+		EventString("He says he'll tell you a story, if you listen")
+		EventNegResult("His story is about youth")
+		EventResult("He rambles, but mentions that people become unhappy if they have to work all the time")
+		EventResult("He tells you that, if you let them rest, idly, they'll be more productive")
+		EventResult("You thank him, and he trots off")
+		EventOption("Listen to what he has to say", eventDoNothing)
+	EventEnd;
+
+
 	minPopNeeded = 4;
+	EventStart("Traders visit, selling wood", 1, 1)
+		EventSetTimeout(3, 6)
+		EventKind(Outsider)
+		EventDefaultOption(eventDoNothing)
+		EventNegResult("Disappointed, they shake their head and walk away")
+		EventString("A few traders have arrived! They are willing to sell wood for food")
+		EventOption("Sell!", eventSellFoodForWood)
+		EventOptionReq(Resource_Food, 5, 20)
+		EventOption("Decline their offer", eventDoNothing)
+	EventEnd;
+
+	EventStart("Traders visit, selling food ", 1, 1)
+		EventSetTimeout(3, 6)
+		EventKind(Outsider)
+		EventDefaultOption(eventDoNothing)
+		EventNegResult("Disappointed, they shake their head and walk away")
+		EventString("A few traders have arrived! They are willing to sell food for wood")
+		EventOption("Sell!", eventSellWoodForFood)
+		EventOptionReq(Resource_Wood, 2, 10)
+		EventOption("Decline their offer", eventDoNothing)
+	EventEnd;
+
+	EventStart("Someone fell over!", 1, 1)
+		EventSetTimeout(1, 2)
+		EventKind(Accident)
+		EventDefaultOption(eventDoNothing)
+		EventNegResult("But they're okay!")
+		EventOption("Go to help them up", eventDoNothing);
+	EventEnd;
+
+
+	EventStart("Some food started to rot", 1, 1)
+		EventSetTimeout(1, 2)
+		EventKind(Accident)
+		EventDefaultOption(eventFoodRotBig)
+		EventNegResult("Gross")
+		EventOption("Quick! Throw it out!", eventFoodRotSmall);
+		EventOption("Gross, I'm not touching that", eventFoodRotBig);
+	EventEnd;
+
+	EventStart("Upon inspection...", 1, 1)
+		EventSetTimeout(1, 2)
+		EventKind(Accident)
+		EventDefaultOption(eventBadTimber)
+		EventString("This wasn't a very good tree; we can't use the wood")
+		EventNegResult("Could have been worse...")
+		EventOption("Well, let's get rid of it then", eventBadTimber);
+	EventEnd;
+
+	EventStart("Somone made a mistake while crafting", 1, 3)
+		EventSetTimeout(1, 2)
+		EventKind(Accident)
+		EventDefaultOption(eventCraftDamage)
+		EventJobSpecific(ActorJob_Building)
+		EventString("It'll set the project back a little bit")
+		EventOption("Oh well", eventCraftDamage);
+	EventEnd;
+
+	EventStart("Somone made a mistake while building", 1, 3)
+		EventSetTimeout(1, 2)
+		EventKind(Accident)
+		EventDefaultOption(eventBuildDamage)
+		EventJobSpecific(ActorJob_Building)
+		EventString("It'll set the project back a little bit")
+		EventOption("Oh well", eventBuildDamage);
+	EventEnd;
+
+	EventStart("Some people were hurt while cutting wood", 1, 3)
+		EventSetTimeout(1, 2)
+		EventKind(Accident)
+		EventDefaultOption(eventIgnoreHurtGatherers)
+		EventJobSpecific(ActorJob_WoodGather)
+		EventSelectCount(1, 1)
+		EventString("%s hurt themselves while cutting wood")
+		EventString("Can you send someone to help?")
+		EventOption("Send Someone", eventSendSomeoneToHelpGatherers);
+		EventOptionReqSelected;
+		EventOption("Hope they make it", eventIgnoreHurtGatherers);
+	EventEnd;
+
+	EventStart("Some people were hurt while gathering food", 1, 3)
+		EventSetTimeout(1, 2)
+		EventKind(Accident)
+		EventDefaultOption(eventIgnoreHurtGatherers)
+		EventJobSpecific(ActorJob_FoodGather)
+		EventSelectCount(1, 1)
+		EventString("%s hurt themselves while foraging")
+		EventString("Can you send someone to help?")
+		EventOption("Send Someone", eventSendSomeoneToHelpGatherers);
+		EventOptionReqSelected;
+		EventOption("Hope they make it", eventIgnoreHurtGatherers);
+	EventEnd;
+
 	EventStart("Someone insulted someone!", 2, 2)
 		EventKind(Conflict)
+		EventString("%s was insulted!")
 		EventOption("Nothing you can do about it now", eventInsulted)
 	EventEnd;
 
@@ -652,6 +820,129 @@ void createEventTemplates(WorldEvent* events, isize* eventCount)
 		EventOption("Break up the fight", eventBreakUpFight);
 		EventOption("Let them fight it out", eventLetFightFinish);
 	EventEnd;
+	
+	//Trader block
+	minPopNeeded = 8;
+	EventStart("A stranger passes through", 1, 1)
+		EventSetTimeout(3, 4)
+		EventKind(Outsider)
+		EventString("An old man visits your haven")
+		EventString("He starts coughing, violently")
+		EventNegResult("*cough* FATE *cough*")
+		EventResult("Between his coughs, he keeps saying 'fate!' 'faaate!'")
+		EventResult("He says he saw it, swirling in the sky")
+		EventResult("A secret message")
+		EventResult("Eventually, his coughs die down, and he falls asleep on the spot")
+		EventResult("By morning, he is nowhere to be found")
+		EventOption("Try to help him", eventDoNothing)
+	EventEnd;
+
+	EventStart("A stranger passes through", 1, 1)
+		EventSetTimeout(3, 4)
+		EventKind(Outsider)
+		EventString("An old man visits your haven")
+		EventString("He says he'll tell you a story, if you listen")
+		EventNegResult("He talks about business")
+		EventResult("He said he was a doctor before he was a traveler")
+		EventResult("It turns out people who are suffering can't work")
+		EventResult("And tend to die pretty quickly")
+		EventResult("But happy people with full bellies get stronger every day!")
+		EventResult("He thanks you for your time and walks away")
+		EventOption("Listen to what he has to say", eventDoNothing)
+	EventEnd;
+
+	EventStart("A stranger passes through", 1, 1)
+		EventSetTimeout(3, 4)
+		EventKind(Outsider)
+		EventString("An old man visits your haven")
+		EventString("He says he'll tell you a story, if you listen")
+		EventNegResult("His story is about his father")
+		EventResult("He tells of mysterious machines that walk the earth, in search of ancient rarities")
+		EventResult("You don't know how true it is, but you thank him, and he goes on his way")
+		EventOption("Listen to what he has to say", eventDoNothing)
+	EventEnd;
+
+	EventStart("A stranger passes through", 1, 1)
+		EventSetTimeout(3, 4)
+		EventKind(Outsider)
+		EventString("An old man visits your haven")
+		EventString("He says he'll tell you a story, if you listen")
+		EventNegResult("His story is about adventure")
+		EventResult("He was an explorer in his youth.")
+		EventResult("He tells of a cave where an ancient treasure resides.")
+		EventResult("If you search long enough, with enough people, you'll find it, he says.")
+		EventOption("Listen to what he has to say", eventDoNothing)
+	EventEnd;
+
+	EventStart("Traders are selling weapons", 1, 1)
+		EventSetTimeout(3, 4)
+		EventKind(Outsider)
+		EventDefaultOption(eventDoNothing)
+		EventNegResult("Unperturbed, they thank you for your time and move on")
+		EventString("A few traders have arrived! They are willing to sell weapons for food")
+		EventOption("Sell!", eventSellFoodForWeapons)
+		EventOptionReq(Resource_Food, 20, 40)
+		EventOption("Decline their offer", eventDoNothing)
+	EventEnd;
+
+	EventStart("Traders are selling weapons", 1, 1)
+		EventSetTimeout(3, 6)
+		EventKind(Outsider)
+		EventDefaultOption(eventDoNothing)
+		EventNegResult("")
+		EventNegResult("Unperturbed, they thank you for your time and move on")
+		EventString("A few traders have arrived! They are willing to sell weapons for wood")
+		EventOption("Sell!", eventSellWoodForWeapons)
+		EventOptionReq(Resource_Wood, 10, 30)
+		EventOption("Decline their offer", eventDoNothing)
+	EventEnd;
+
+	EventStart("Traders have tools for sale", 1, 1)
+		EventSetTimeout(3, 6)
+		EventKind(Outsider)
+		EventDefaultOption(eventDoNothing)
+		EventNegResult("Unperturbed, they thank you for your time and move on")
+		EventString("A few traders have arrived! They are willing to sell tools for food")
+		EventOption("Sell!", eventSellFoodForTools)
+		EventOptionReq(Resource_Food, 10, 30)
+		EventOption("Decline their offer", eventDoNothing)
+	EventEnd;
+
+	EventStart("Traders have tools for sale", 1, 1)
+		EventSetTimeout(3, 6)
+		EventKind(Outsider)
+		EventDefaultOption(eventDoNothing)
+		EventNegResult("")
+		EventNegResult("Unperturbed, they thank you for your time and move on")
+		EventString("A few traders have arrived! They are willing to sell tools for wood")
+		EventOption("Sell!", eventSellWoodForTools)
+		EventOptionReq(Resource_Wood, 5, 20)
+		EventOption("Decline their offer", eventDoNothing)
+	EventEnd;
+
+	minPopNeeded = 12;
+	//Selling tools/weapons
+	EventStart("Traders will buy tools", 1, 1)
+		EventSetTimeout(3, 6)
+		EventKind(Outsider)
+		EventDefaultOption(eventDoNothing)
+		EventNegResult("Unperturbed, they thank you for your time and move on")
+		EventString("A few traders have arrived! They are willing to sell resources for tools")
+		EventOption("Sell!", eventSellToolsForStuff)
+		EventOptionReq(Resource_Tools, 1, 5)
+		EventOption("Decline their offer", eventDoNothing)
+	EventEnd;
+
+	EventStart("Traders will buy weapons", 1, 1)
+		EventSetTimeout(3, 6)
+		EventKind(Outsider)
+		EventDefaultOption(eventDoNothing)
+		EventNegResult("Unperturbed, they thank you for your time and move on")
+		EventString("A few traders have arrived! They are willing to sell resources for weapons")
+		EventOption("Sell!", eventSellWeaponsForStuff)
+		EventOptionReq(Resource_Weapons, 1, 5)
+		EventOption("Decline their offer", eventDoNothing)
+	EventEnd;
 
 }
 
@@ -659,7 +950,14 @@ void createEventTemplates(WorldEvent* events, isize* eventCount)
 void populateEventFromTemplate(World* world, WorldEvent* event, WorldEvent* template)
 {
 	memcpy(event, template, sizeof(WorldEvent));
-	event->timeout = getRandRangeF64(world->r, event->timeoutMin, event->timeoutMax);
+	event->timeout = getRandRangeF64(world->r, event->timeoutMin, event->timeoutMax) * 2;
+	if(world->day > 6) {
+		f32 t = (world->day - 6) / 18;
+		if(t > 0.75) t = 0.75;
+		event->timeout *= 1 - t;
+	}
+	event->timeout += 0.5;
+
 	event->involveCount = getRandomRange(world->r,
 				event->involveCountMin, event->timeoutMax);
 	for(isize i = 0; i < event->optionCount; ++i) {

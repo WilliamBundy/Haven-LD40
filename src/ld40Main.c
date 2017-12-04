@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <time.h>
+#include <Shlwapi.h>
 
 #include "wpl/wpl.h"
 #include "vmath.c"
@@ -35,11 +36,38 @@ struct {
 #include "ui.c"
 #include "gamestate.c"
 
+void saveGame(wplWindow* window, World* world)
+{
+	char buf[1024];
+	snprintf(buf, 1024, "%shaven.save", window->basePath);
+	FILE* f = fopen(buf, "wb");
+	if(f) {
+		fwrite(world, sizeof(World), 1, f);
+	} else {
+		printf("Failed to save game!");
+	}
+}
+ 
+int loadGame(wplWindow* window, World* world)
+{
+	char buf[1024];
+	snprintf(buf, 1024, "%shaven.save", window->basePath);
+	if(!PathFileExists(buf)) return 0;
+	FILE* f = fopen(buf, "rb");
+	if(f) {
+		fread(world, sizeof(World), 1, f);
+		return 1;
+	}
+	return 0;
+}
+
+int gameLoaded = 0;
+
 void init(wplWindow* window)
 {
 	createEventTemplates(eventTemplates, &eventTemplateCount);
 	gameData.shader = arenaPush(arena, sizeof(wplShader));
-	gameData.basicTex = wplLoadTexture(window, "basic.png", arena);
+	gameData.basicTex = wplLoadTexture(window, "faces.png", arena);
 	gameData.bgTex = wplLoadTexture(window, "bg.png", arena);
 	gameData.gohufontTex = wplLoadTexture(window, "gohufont.png", arena);
 	wplUploadTexture(gameData.basicTex);
@@ -57,23 +85,60 @@ void init(wplWindow* window)
 	//TODO(will): implement world save/load
 	// temporary worldgen/setup goes here
 	play.world = arenaPush(play.arena, sizeof(World));
-	
-	play.world->r = &play.world->randomState;
-	initRandom(play.world->r, 1123 * time(0));
+	int loaded = loadGame(window, play.world);
+	if(play.world->actorCount == 0) loaded = 0;
 
-	play.world->day = 1;
-	play.world->buildings.huts = 1;
-	play.world->resources.wood = 50;
-	play.world->resources.food = 24;
-	for(isize i = 0; i < 3; ++i) {
-		addActor(generateActor());
-		arenaPop(tempArena);
+	gameLoaded = loaded;
+
+	if(loaded) {
+		play.world->r = &play.world->randomState;
+		for(isize i = 0; i < play.world->actorCount; ++i) {
+			Actor* actor = play.world->actors + i;
+			if(actor->sex) {
+				actor->name = maleNames[actor->nameIndex];
+			} else {
+				actor->name = femaleNames[actor->nameIndex];
+			}
+		}
+	} else {
+		play.world->r = &play.world->randomState;
+		initRandom(play.world->r, 1123 * time(0));
+		play.world->day = 1;
+		play.world->buildings.huts = 1;
+		play.world->resources.wood = 20;
+		play.world->resources.food = 24;
+		for(isize i = 0; i < 3; ++i) {
+			addActor(generateActor());
+			arenaPop(tempArena);
+		}
 	}
 }
 
 void update(wplWindow* window, wplState* state)
 {
-	playUpdate(window, state);
+	if(gameLoaded) {
+		if(uiButtonL(8, state->height / 8 - 16, "Load save game")) {
+			gameLoaded = 0;
+		}
+		if(uiButtonL(8, state->height / 8 + 16, "Start a new game")) {
+			memset(play.world, 0, sizeof(World));
+			play.world->r = &play.world->randomState;
+			initRandom(play.world->r, 1123 * time(0));
+			play.world->day = 1;
+			play.world->buildings.huts = 1;
+			play.world->resources.wood = 20;
+			play.world->resources.food = 24;
+			for(isize i = 0; i < 3; ++i) {
+				addActor(generateActor());
+				arenaPop(tempArena);
+			}
+			gameLoaded = 0;
+		}
+		textGroup->scale = 4;
+		wplGroupDraw(window, state, textGroup);
+	} else {
+		playUpdate(window, state);
+	}
 }
 
 int main(int argc, char** argv)
@@ -100,10 +165,18 @@ int main(int argc, char** argv)
 	state.input = &inputState;
 	state.input->keyboard = state.input->scancodes;
 	while(1) {
-		if(!wplUpdate(&window, &state)) break;
+		if(!wplUpdate(&window, &state)) {
+			if(play.mode == Mode_MorningAssign) {
+				saveGame(&window, play.world);
+			}
+			break;
+		}
 		mouseX = state.mouseX;
 		mouseY = state.mouseY;
 		update(&window, &state);
+		if(state.exitEvent) {
+			break;
+		}
 		wplRender(&window);
 	}
 }

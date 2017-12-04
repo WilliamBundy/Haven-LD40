@@ -65,7 +65,7 @@ del *.obj >NUL 2>&1
 /link ^
 	/nologo ^
 	/LIBPATH:"usr\lib" ^
-	kernel32.lib user32.lib wpl.lib ^
+	kernel32.lib user32.lib Shlwapi.lib wpl.lib ^
 	/SUBSYSTEM:CONSOLE ^
 	/INCREMENTAL:NO
 

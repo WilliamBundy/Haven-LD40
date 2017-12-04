@@ -155,6 +155,7 @@ i64 wplCreateWindow(wplWindowDef* def, wplWindow* window)
 	glClearColor(0, 0, 0, 1);
 
 	window->basePath = SDL_GetBasePath();
+	SDL_GL_SetSwapInterval(1);
 
 	return windowHandle == NULL ? 0 : 1;
 }

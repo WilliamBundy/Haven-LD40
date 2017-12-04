@@ -22,6 +22,8 @@ typedef struct World World;
 typedef struct Actor Actor;
 typedef struct Hut Hut;
 typedef struct WorldEvent WorldEvent;
+void saveGame(wplWindow* w, World* world);
+int loadGame(wplWindow* w, World* world);
 
 Actor* addActor(Actor* actor);
 Actor* generateActor();
@@ -61,6 +63,7 @@ struct WorldEvent
 struct Actor
 {
 	string name;
+	int nameIndex;
 	f32 aggroChance;
 	int state, job, mood;
 	int health, food;
@@ -70,6 +73,8 @@ struct Actor
 	int positiveTraits[4];
 	int negativeTraits[4];
 	int selected;
+	f32 dailyWorkMod;
+	int faceX, faceY;
 };
 
 struct Hut
@@ -77,6 +82,18 @@ struct Hut
 	Actor* actors[4];
 	int condition;
 	int timer;
+};
+
+struct Resources{
+	int population;
+	int wood, food;
+	int tools, weapons, artifacts;
+};
+
+struct Buildings {
+	int huts;
+	int farms;
+	int smiths;
 };
 
 struct World 
@@ -95,17 +112,8 @@ struct World
 	int craftWorkNeeded;
 	int buildWorkNeeded;
 
-	struct {
-		int population;
-		int wood, food;
-		int tools, weapons, artifacts;
-	} resources;
-
-	struct {
-		int huts;
-		int farms;
-		int smiths;
-	} buildings;
+	struct Resources resources;
+	struct Buildings buildings;
 
 	int jobCount[ActorJobCount];
 
@@ -128,6 +136,8 @@ struct PlayState {
 	MemoryArena* arena;
 	wplRenderGroup* group;
 
+	struct Resources res;
+	struct Buildings bil;
 	World* world;
 	Actor* removed[256];
 	string deadNames[256];
@@ -153,10 +163,13 @@ Actor* generateActor()
 	actor->health = getRandomRange(world->r, 8, 12);
 	actor->food = getRandomRange(world->r, 38, 50);
 	actor->sex = getRandom(world->r) < 0.50002 ? 1 : 0;
+	actor->faceX = getRandomRange(world->r, 0, 4);
+	actor->faceY = getRandomRange(world->r, 0, 4);
+	actor->nameIndex = getRandomRange(world->r, 0, 80);
 	if(actor->sex) {
-		actor->name = maleNames[getRandomRange(world->r, 0, 80)];
+		actor->name = maleNames[actor->nameIndex];
 	} else {
-		actor->name = femaleNames[getRandomRange(world->r, 0, 80)];
+		actor->name = femaleNames[actor->nameIndex];
 	}
 	
 	int numTraits = getRandomRange(world->r, 2, 7);
@@ -280,9 +293,9 @@ void drawActor(Actor* actor, f32 x, f32 y)
 	} 
 
 	if(actor->sex) {
-		addSpriteS(x + 4, y, Face2, 0.5);
+		addSpriteS(x + 4, y, 64, 80, actor->faceX * 64 + 4 * 64, actor->faceY * 80, 0.5);
 	} else {
-		addSpriteS(x + 4, y, Face1, 0.5	);
+		addSpriteS(x + 4, y, 64, 80, actor->faceX * 64, actor->faceY * 80, 0.5);
 	}
 
 	if(actor->health < -10) {
@@ -298,7 +311,7 @@ void drawActor(Actor* actor, f32 x, f32 y)
 	drawText(x + 40, y + 14, buf);
 	snprintf(buf, 256, "HP: %d", actor->health);
 	drawText(x + 40, y + 24, buf);
-	snprintf(buf, 256, "Work: \n%d", actor->daysConsecutiveWork);
+	snprintf(buf, 256, "Worked:\n%d days", actor->daysConsecutiveWork);
 	drawText(x + 40, y + 34, buf);
 
 	drawText(x + 4, y + 44, actor->name);
@@ -367,7 +380,7 @@ int drawEventTab(WorldEvent* e, f32 x, f32 y)
 	s = wplGetSprite(textGroup);
 	s->x = x + 4;
 	s->y = 12 + y;
-	s->w = 16 * (1.0 < e->timeout ? 1.0 : e->timeout);
+	s->w = 16 * (1.0 < e->timeout / 2 ? 1.0 : e->timeout / 2);
 	s->h = 8;
 	s->flags = Sprite_NoTexture | Anchor_TopLeft;
 	s->color = 0xFFFFFFFF;
@@ -415,7 +428,15 @@ int drawEventPanel(WorldEvent* e, wplState* state)
 
 		f32 y = 22;
 		if(e->resultText) {
-			y += drawTextSW(s->x + 8, s->y + y, e->resultText, 1, textWidth);
+			string tp = e->resultText;
+			char buf[256];
+			if(e->involves[0]) {
+				if(stringContains(e->resultText, '%')) {
+					snprintf(buf, 256, e->resultText, e->involves[0]->name);
+					tp = buf;
+				}
+			}
+			y += drawTextSW(s->x + 8, s->y + y, tp, 1, textWidth);
 			y += 4;
 		}
 
@@ -533,6 +554,7 @@ void playUpdate(wplWindow* window, wplState* state)
 	if(play.mode == Mode_DayEvents) {
 		f32 timep = (f32)play.dayTimer / (f32)DayTimeInFrames; 
 		int c = 0xFF;
+
 		int a = 0xFF;
 		if(timep < 0.5) {
 			c = (int)((timep + 0.5) * 255);
@@ -610,7 +632,6 @@ void playUpdate(wplWindow* window, wplState* state)
 		drawText(8, by, buf);
 		by += 10;
 
-
 		wplGroupDraw(window, state, textGroup);
 		return;
 
@@ -618,53 +639,69 @@ void playUpdate(wplWindow* window, wplState* state)
 
 	if(play.mode == Mode_MorningAssign) {
 		drawText(8, 8, "Good morning! Please assign workers:");
-		if(uiButton(8, 20, "Confirm")) {
-			play.dayTimer = DayTimeInFrames - DayTimeInFrames / 4;
-			play.mode = Mode_DayEvents;
-
-			memset(world->jobCount, 0, sizeof(int) * ActorJobCount);
+		int anyworking = 0;
+		if(world->day < 5) {
 			for(isize i = 0; i < world->actorCount; ++i) {
 				Actor* a = world->actors + i;
-				world->jobCount[a->job]++;
+				if(a->job != ActorJob_None) anyworking = 1;
 			}
+		} else {
+			anyworking = 1;
+		}
 
-			for(isize i = 0; i < world->actorCount; ++i) {
-				Actor* a = world->actors + i;
-				int lastState = a->state;
+		if(anyworking) {
+			if(uiButton(8, 20, "Confirm")) {
+				play.dayTimer = DayTimeInFrames - DayTimeInFrames / 4;
+				play.mode = Mode_DayEvents;
+				play.res = world->resources;
+				play.bil = world->buildings;
 
-				if(a->food < -500) {
-					a->state = ActorState_Suffering;
-					a->health -= 5;
-				} else if(a->food < -150) {
-					a->state = ActorState_Hungry;
-					a->health--;
-				} else {
-					if(a->job == ActorJob_None) {
-						a->state = ActorState_Idle;
-						a->daysConsecutiveWork = 0;
-					} else if(a->mood < -1) {
-						a->state = ActorState_Moping;
+				memset(world->jobCount, 0, sizeof(int) * ActorJobCount);
+				for(isize i = 0; i < world->actorCount; ++i) {
+					Actor* a = world->actors + i;
+					world->jobCount[a->job]++;
+				}
+
+				for(isize i = 0; i < world->actorCount; ++i) {
+					Actor* a = world->actors + i;
+					a->dailyWorkMod = 1;
+					int lastState = a->state;
+
+					if(a->food < -500) {
+						a->state = ActorState_Suffering;
+					} else if(a->food < -150) {
+						a->state = ActorState_Hungry;
 					} else {
-						a->state = ActorState_Working;
+						if(a->job == ActorJob_None) {
+							a->state = ActorState_Idle;
+							a->daysConsecutiveWork = 0;
+						} else if(a->mood < -1) {
+							a->state = ActorState_Moping;
+						} else {
+							a->state = ActorState_Working;
+						}
+
+					}
+
+					if(a->health < -5) {
+						a->state = ActorState_Suffering;
+					}
+
+					if(a->health < -10) {
+						play.removed[play.removedCount++] = a;
 					}
 
 				}
-
-				if(a->health < -10) {
-					play.removed[play.removedCount++] = a;
+			} 
+			if(uiButton(80, 20, "Set everyone to idle")) {
+				for(isize i = 0; i < world->actorCount; ++i) {
+					Actor* a = world->actors + i;
+					a->job = ActorJob_None;
 				}
-
 			}
-
+		} else {
+			drawText(10, 22, "You need to assign workers"); 
 		}
-
-		if(uiButton(80, 20, "Set everyone to idle")) {
-			for(isize i = 0; i < world->actorCount; ++i) {
-				Actor* a = world->actors + i;
-				a->job = ActorJob_None;
-			}
-		}
-
 
 		if(world->craftTarget == 0) {
 			drawText(8, 36, "No crafting target");
@@ -719,45 +756,61 @@ void playUpdate(wplWindow* window, wplState* state)
 
 		by +=  8;
 
-		drawText(8, by, "1 wood, 5 work. Improves build/craft speed by 10%");
+		drawText(8, by, "1 wood, 3 work. Improves build/craft speed by 10%");
 		by += 10;
 		if(uiButton(8, by, "Craft Tool")) {
-			world->craftWorkNeeded = 5;
-			world->craftTarget = 1;
+			if(world->craftTarget != 1) {
+				world->craftWorkNeeded = 3;
+				world->craftTarget = 1;
+			}
 		}
 		by += 22;
 
 		drawText(8, by, "1 wood, 8 work. Allows people to defend the haven");
 		by += 10;
 		if(uiButton(8, by, "Craft Weapon")) {
-			world->craftWorkNeeded = 5;
-			world->craftTarget = 2;
+			if(world->craftTarget != 2) {
+				world->craftWorkNeeded = 5;
+				world->craftTarget = 2;
+			}
 		}
 		by += 22;
 
-		drawText(8, by, "15 wood, 20 work. Houses six people");
+		drawText(8, by, "10 wood, 10 work. Houses six people");
 		by += 10;
 		if(uiButton(8, by, "Build Hut")) {
-			world->buildWorkNeeded = 20;
-			world->buildTarget = 1;
+			if(world->buildTarget != 1) {
+				world->buildWorkNeeded = 10;
+				world->buildTarget = 1;
+			}
 		}
 		by += 22;
 
 		drawText(8, by, "5 wood, 50 work. Increases food production by 25%");
 		by += 10;
 		if(uiButton(8, by, "Build Farm")) {
-			world->buildWorkNeeded = 50;
-			world->buildTarget = 2;
+			if(world->buildTarget != 2) {
+				world->buildWorkNeeded = 50;
+				world->buildTarget = 2;
+			}
 		}
 		by += 22;
 
-		drawText(8, by, "25 wood, 100 work. Lets you understand artifacts");
+		drawText(8, by, "25 wood, 75 work. Lets you understand artifacts");
 		by += 10;
 		if(uiButton(8, by, "Build Smith")) {
-			world->buildWorkNeeded = 100; 
-			world->buildTarget = 3;
+			if(world->buildTarget != 3) {
+				world->buildWorkNeeded = 75; 
+				world->buildTarget = 3;
+			}
 		}
-		by += 22;
+		by += 22 + 32;
+
+		if(uiButton(8, by, "Save and quit")) {
+			saveGame(window, play.world);
+			state->exitEvent = 1;
+			return;
+		}
 
 	
 		if(world->day == 1) {
@@ -798,17 +851,17 @@ void playUpdate(wplWindow* window, wplState* state)
 			f32 foodConsumed = 0;
 
 			f32 artifactMod = 2 * world->resources.artifacts * world->buildings.smiths;
-			f32 foodMod = artifactMod + world->buildings.farms * 0.25f;
-			f32 woodMod = artifactMod;
-			f32 buildCraftMod = artifactMod + world->resources.tools * 0.1f;
+			f32 foodMod = 1 + artifactMod + world->buildings.farms * 0.25f;
+			f32 woodMod = 1 + artifactMod;
+			f32 buildCraftMod = 1 + artifactMod + world->resources.tools * 0.1f;
 			//TODO(will): implement wood gather falloff as time goes on.
 			for(isize i = 0; i < world->actorCount; ++i) {
 				Actor* a = world->actors + i;
 				if(a->health < -10) continue;
 				a->food -= getRandomRange(world->r, 95, 105);
 				//TODO(will) modulate based on skills
-				foodConsumed += 1;
-				f32 workAmt = 1 + (a->health > 0 ? (a->health / 20.0) : 0);
+				foodConsumed += 2;
+				f32 workAmt = a->dailyWorkMod + (a->health > 0 ? (a->health / 20.0) : 0);
 				if(a->state == ActorState_Suffering) {
 					workAmt = 0;
 				} else if(a->state == ActorState_Hungry) {
@@ -837,12 +890,12 @@ void playUpdate(wplWindow* window, wplState* state)
 						if(a->mood > 10) a->mood = 10;
 						break;
 					case ActorJob_FoodGather:
-						amt = 1.5 + getRandom(world->r) * 0.5;
+						amt = 3 + getRandom(world->r) * 0.5;
 						amt *= workAmt * foodMod;
 						foodGather += amt;
 						break;
 					case ActorJob_WoodGather:
-						amt = 0.9 + getRandom(world->r) * 0.25;
+						amt = 2 + getRandom(world->r) * 0.55;
 						amt *= workAmt * woodMod;
 						woodGather += amt;
 						break;
@@ -861,6 +914,7 @@ void playUpdate(wplWindow* window, wplState* state)
 				a->contribType = a->job;
 			}
 
+			printf("gathered: %f\n", foodGather);
 			f32 foodAvailable = world->resources.food + foodGather;
 			f32 foodEaten = foodAvailable < foodConsumed ? 
 				foodAvailable : foodConsumed;
@@ -872,14 +926,21 @@ void playUpdate(wplWindow* window, wplState* state)
 			if(world->craftTarget) {
 				world->craftWorkNeeded -= craftWork;
 				if(world->craftWorkNeeded <= 0) {
+					int multiples = -world->craftWorkNeeded / (world->craftTarget == 1 ? 
+							3 : 8);
 					int craftCost = 1;
-					if(world->resources.wood >= craftCost) {
+					int cc = 0;
+					while(world->resources.wood >= craftCost) {
+						cc++;
 						world->resources.wood -= craftCost;
 						if(world->craftTarget == 1) {
 							world->resources.tools++;
 						} else if(world->craftTarget == 2) {
 							world->resources.weapons++;
 						}
+						if(cc >= multiples) break;
+					}
+					if(cc > 0) {
 						world->craftTarget = 0;
 						world->craftWorkNeeded = 0;
 					}
@@ -891,7 +952,7 @@ void playUpdate(wplWindow* window, wplState* state)
 				if(world->buildWorkNeeded <= 0) {
 					int craftCost = 1;
 					if(world->buildTarget == 1) {
-						craftCost = 15; 
+						craftCost = 10; 
 					} else if(world->buildTarget == 2) {
 						craftCost = 5;
 					} else if(world->buildTarget == 3) {
@@ -910,9 +971,6 @@ void playUpdate(wplWindow* window, wplState* state)
 						world->buildTarget = 0;
 						world->buildWorkNeeded = 0;
 					}
-
-
-					//TODO(will) increment correct resource for craft
 				}
 			}
 
@@ -922,7 +980,7 @@ void playUpdate(wplWindow* window, wplState* state)
 				foodConsumed = 0;
 				for(isize i = 0; i < world->actorCount; ++i) {
 					Actor* a = world->actors + i;
-					a->food += 100 * (int)(foodEaten / world->actorCount);
+					a->food += 100 * (int)(foodEaten / (2*world->actorCount));
 					if(a->food < 100) {
 						hungry[hungryCount++] = a;
 						foodConsumed += 0.5;
@@ -937,12 +995,19 @@ void playUpdate(wplWindow* window, wplState* state)
 
 				for(isize i = 0; i < hungryCount; ++i) {
 					Actor* a = hungry[i];
-					a->food += 50 * (int)(foodEaten / hungryCount);
+					a->food += 50 * (int)(foodEaten / (hungryCount*2));
 				}
 				for(isize i = 0; i < world->actorCount; ++i) {
 					Actor* a = world->actors + i;
 					a->selected = 0;
 					if(a->food > 100 && a->mood > 0) {
+						a->health++;
+						if(a->health > 10) {
+							a->health = 10;
+						}
+					}
+
+					if(a->food > 0 && a->job == ActorJob_None) {
 						a->health++;
 						if(a->health > 10) {
 							a->health = 10;
@@ -1016,6 +1081,17 @@ void playUpdate(wplWindow* window, wplState* state)
 					getSpecificEvent(2);
 				}
 			}
+
+			if(world->actorCount > 12) {
+				if(world->day % 3 == 1) {
+					if(tod <= lastDayTimer && tod >= play.dayTimer) {
+						WorldEvent* e = getSpecificEvent(3);
+						//The more you have, the worse it is.
+						e->optionReqs[0].amt = getRandomRange(world->r, 
+								0, world->resources.weapons / 2 + world->actorCount);
+					}
+				}
+			}
 		}
 		while(play.eventSpan > play.nextEventTime) {
 			play.eventSpan -= play.nextEventTime;
@@ -1023,20 +1099,22 @@ void playUpdate(wplWindow* window, wplState* state)
 			play.nextEventTime = getRandomRange(world->r, 
 					DayTimeInFrames / 96, DayTimeInFrames / 40);
 			//trigger event
-			int eventRate = world->actorCount / 3 + 1;
+			int eventRate = world->actorCount / 3 + 2;
 			if(world->day > 5) {
 				eventRate += world->day / 5;
 			}
 
 			eventRate = getRandomRange(world->r, 
-					eventRate / 2 + 1, eventRate);
+					eventRate / 2 + 1, eventRate) + 1;
 
 			for(isize i = 0; i < eventRate; ++i) {
 				const i32 eventChances[] = {
 					Event_Gift,     Event_Gift,
 					Event_Solo,     Event_Solo, Event_Solo,
+					Event_Solo,     Event_Solo, Event_Solo,
+					Event_Solo,     Event_Solo, Event_Solo,
 					Event_Accident, Event_Accident,
-					Event_Conflict, Event_Conflict, Event_Conflict, Event_Conflict,
+					Event_Conflict, Event_Conflict, Event_Conflict,
 					Event_Outsider, Event_Outsider, Event_Outsider, Event_Outsider,
 					Event_Gift,     Event_Gift,
 					Event_Solo,     Event_Solo, Event_Solo,
@@ -1051,6 +1129,19 @@ void playUpdate(wplWindow* window, wplState* state)
 				};
 				i32 eventChanceCount = sizeof(eventChances) / 4;
 				i32 chosen = getRandomRange(world->r, 0, eventChanceCount);
+				if(world->day > 5) {
+					if(chosen == Event_Gift) {
+						chosen = getRandomRange(world->r, 0, eventChanceCount);
+					}
+
+					if(chosen == Event_Outsider) {
+						if(world->actorCount < (world->buildings.huts * 6)) {
+							if(getRandom(world->r) < 0.25) {
+								getSpecificEvent(0);
+							}
+						}
+					}
+				}
 				switch(chosen) {
 					case Event_Gift: generateGiftEvent(); break;
 					case Event_Solo: generateSoloEvent(); break;
@@ -1174,7 +1265,7 @@ void playUpdate(wplWindow* window, wplState* state)
 		}
 	} else if(play.mode == Mode_EveningReview) {
 		play.eventCount = 0;
-		if(play.dayTimer < 0 && uiButton(4, 4, "Go to sleep")) {
+		if(play.dayTimer < 0 && uiButton(16, 16, "Finished reviewing... Sleep til morning")) {
 			play.mode = Mode_MorningAssign;
 			play.dayTimer = -1;
 			for(isize i = 0; i < world->actorCount; ++i) {
@@ -1184,9 +1275,12 @@ void playUpdate(wplWindow* window, wplState* state)
 				if(a->food < -500) {
 					a->state = ActorState_Suffering;
 					a->health -= 5;
+					if(a->mood > 0)
+						a->mood = 0;
 				} else if(a->food < -150) {
 					a->state = ActorState_Hungry;
 					a->health--;
+					a->mood--;
 				} else {
 					if(a->job == ActorJob_None) {
 						a->state = ActorState_Idle;
@@ -1210,8 +1304,60 @@ void playUpdate(wplWindow* window, wplState* state)
 
 		if(play.dayTimer < 0) {
 			char buf[256];
-			f32 y = 18;
+			f32 y = 48;
+			struct Resources resdiff;
+			struct Resources w = world->resources;
+			struct Resources p = play.res;
 
+			resdiff.population = w.population - p.population;
+			resdiff.food = w.food - p.food;
+			resdiff.wood = w.wood - p.wood;
+			resdiff.tools = w.tools - p.tools;
+			resdiff.weapons = w.weapons - p.weapons;
+
+			snprintf(buf, 256, "Summary for Day %d", world->day);
+			drawTextS(16, y, buf, 1);
+			y += 32;
+			snprintf(buf, 256, "Population: %d -> %d (%d)", p.population, w.population, resdiff.population);
+			drawText(16, y, buf);
+			y += 16;
+			snprintf(buf, 256, "Food: %d -> %d (%d)", p.food, w.food, resdiff.food);
+			drawText(16, y, buf);
+			y += 16;
+
+			snprintf(buf, 256, "Wood: %d -> %d (%d)", p.wood, w.wood, resdiff.wood);
+			drawText(16, y, buf);
+			y += 16;
+
+			snprintf(buf, 256, "Tools: %d -> %d (%d)", p.tools, w.tools, resdiff.tools);
+			drawText(16, y, buf);
+			y += 16;
+
+			snprintf(buf, 256, "Weapons: %d -> %d (%d)", p.weapons, w.weapons, resdiff.weapons);
+			drawText(16, y, buf);
+			y += 32;
+
+			struct Buildings bd;
+			struct Buildings wb = world->buildings;
+			struct Buildings pd = play.bil;
+
+			bd.huts = wb.huts - pd.huts;
+			bd.farms = wb.farms - pd.farms;
+			bd.smiths = wb.smiths - pd.smiths;
+
+			snprintf(buf, 256, "Huts: %d -> %d (%d)", pd.huts, wb.huts, bd.huts);
+			drawText(16, y, buf);
+			y += 16;
+
+			snprintf(buf, 256, "Farms: %d -> %d (%d)", pd.farms, wb.farms, bd.farms);
+			drawText(16, y, buf);
+			y += 16;
+
+			snprintf(buf, 256, "Smiths: %d -> %d (%d)", pd.smiths, wb.smiths, bd.smiths);
+			drawText(16, y, buf);
+
+
+			/*
 			snprintf(buf, 256, "Food: %d", world->resources.food);
 			drawText(4, y, buf);
 			y += 14;
@@ -1230,9 +1376,11 @@ void playUpdate(wplWindow* window, wplState* state)
 			snprintf(buf, 256, "Population %d", world->actorCount);
 			drawText(4, y, buf);
 			y += 18;
+			*/
 
 			for(isize i = 0; i < play.deadCount; ++i)  {
 				string a = play.deadNames[i];
+				if(a == NULL) continue;
 				snprintf(buf, 256, "%s died", a);
 				drawText(4, y, buf);
 				y += 10;

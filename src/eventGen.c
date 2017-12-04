@@ -15,13 +15,14 @@ int eventAddPeople(WorldEvent* e)
 {
 	isize added = 0; 
 	World* world = play.world;
-	if(e->jobSpecific) {
+	if(e->jobSpecific != -1) {
 		//build candidate list, choose from that
 		Actor* candidates[256];
 		isize candidateCount = 0;
 		for(isize i = 0; i < world->actorCount; ++i) {
 			Actor* a = world->actors + i;
 			if(a->job != e->jobSpecific) continue;
+			if(a->health < -10) continue;
 
 			candidates[candidateCount++] = a;
 		}
@@ -32,6 +33,8 @@ int eventAddPeople(WorldEvent* e)
 			//TODO(will) maybe we should decide if the job should implode
 			//// if there aren't enough people for it
 		}
+
+		if(candidateCount == 0) return 1;
 
 		for(isize i = 0; i < e->involveCount; ++i) {
 			isize index = getRandomRange(world->r, 0, candidateCount);
@@ -47,6 +50,7 @@ int eventAddPeople(WorldEvent* e)
 			e->involves[i] = candidates[index];
 		}
 	} else {
+		isize t = 0;
 		for(isize i = 0; i < e->involveCount; ++i) {
 			isize index = getRandomRange(world->r, 0, world->actorCount);
 			if(i > 0) {
@@ -58,12 +62,18 @@ int eventAddPeople(WorldEvent* e)
 				}
 			}
 
+			if(world->actors[index].health < -10) {
+				i--;
+				t++;
+				if(t > 512) return 1;
+				continue;
+			}
+
 			added++;
 			e->involves[i] = world->actors + index;
 		}
 	}
 
-	printf("%d %d\n", added, e->involveCount);
 	return added < e->involveCount;
 }
 
@@ -118,6 +128,7 @@ void generateSoloEvent()
 	if(!e) return;
 	int ret = eventAddPeople(e);
 	if(ret) {
+		printf("Solo event failed\n");
 		play.eventCount--;
 	}
 }

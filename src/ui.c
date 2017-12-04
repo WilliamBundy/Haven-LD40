@@ -102,6 +102,7 @@ void getMouse(wplRenderGroup* group, f32* mx, f32* my)
 	*my = mouseY / group->scale;
 }
 
+
 int uiButton(f32 x, f32 y, string msg)
 {
 	f32 c = strlen(msg) * gameData.font.glyphs[1].w;
@@ -134,6 +135,46 @@ int uiButton(f32 x, f32 y, string msg)
 		s->color = 0x00000099;
 		if(mouseState == 1) {
 			s->color = 0x000000BB;
+		} 
+	}
+
+	drawText(x + 4, y + 2, msg);
+	
+	return mouseIn && mouseState == 2;
+}
+
+int uiButtonL(f32 x, f32 y, string msg)
+{
+	f32 c = strlen(msg) * gameData.font.glyphs[1].w;
+	c *= 0.5;
+	c += 8;
+	f32 width = c < 48 ? 48 : c;
+	f32 height = 10;
+
+	int mouseIn = 0, mouseState = 0;
+	f32 mx, my;
+	getMouse(textGroup, &mx, &my);
+	if(mx > x && my > y && mx < (x + width) && my < (y + height)) {
+		mouseIn = 1;
+		mouseState = wplMouseIsDown(1);
+		if(!mouseState) {
+			mouseState = wplMouseIsJustUp(1) * 2;
+		}
+	}
+
+	wplSprite* s = wplGetSprite(textGroup);
+	s->x = x;
+	s->y = y;
+	s->w = width;
+	s->h = height;
+	s->flags = Sprite_NoTexture | Anchor_TopLeft;
+
+	if(!mouseState && !mouseIn) {
+		s->color = 0xFFFFFF66;
+	} else if(mouseIn) {
+		s->color = 0xFFFFFF99;
+		if(mouseState == 1) {
+			s->color = 0xFFFFFFBB;
 		} 
 	}
 

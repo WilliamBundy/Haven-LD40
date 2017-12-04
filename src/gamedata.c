@@ -19,6 +19,7 @@ string resourceNames[] = {
 	M_event(Group, 0x222222AA) \
 	M_event(Accident, 0x994400AA) \
 	M_event(Conflict, 0x990000AA) \
+	M_event(Raid, 0x990000AA) \
 	M_event(Outsider, 0x000088AA) \
 	M_event(Special, 0x550088AA) \
 	M_event(Tutorial, 0xFFCC00AA)
@@ -134,7 +135,7 @@ float negTraitDmgMod[] = {
 #undef M_trait
 
 #define GenActorJobs \
-	M_job(None, "idle", "nothing") \
+	M_job(None, "resting", "nothing") \
 	M_job(FoodGather, "gathering food", "food") \
 	M_job(WoodGather, "wood cutting", "wood") \
 	M_job(Crafting, "crafting", "craft work") \

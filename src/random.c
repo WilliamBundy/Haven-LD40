@@ -50,7 +50,7 @@ void initRandom(RandomState* r, u64 seed)
 
 f64 getRandomF64(RandomState* r)
 {
-	return getRandomU64(r) / (double)UINT64_MAX;
+	return (double)getRandomU64(r) / (double)UINT64_MAX;
 }
 
 f32 getRandom(RandomState* r)
